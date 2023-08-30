@@ -1,0 +1,69 @@
+# Project: Database Replication
+
+## Tasks
+- [ ] Design architecture
+- [ ] Initialize Postgres with dataset
+    - [ ] Database catalog
+- [ ] Build Flask application to fake generate data
+
+## Database catalog
+
+### Schema
+WideWorldImporters uses schemas for different purposes, such as storing data, defining how users can access the data, and providing objects for data warehouse development and integration.
+
+#### Data schemas
+These schemas contain the data. Many tables are needed by all other schemas and are located in the Application schema.
+
+| Schema | Description |
+| --- | ----------- |
+| Application | Application-wide users, contacts, and parameters. This schema also contains reference tables with data that is used by multiple schemas |
+| Purchasing | Stock item purchases from suppliers and details about suppliers. | 
+| Sales | Stock item sales to retail customers, and details about customers and sales people. | 
+| Warehouse | Stock item inventory and transactions. | 
+
+#### Secure-access schemas
+These schemas are used for external applications that are not allowed to access the data tables directly. They contain views and stored procedures used by external applications.
+
+| Schema | Description |
+| --- | ----------- |
+| Website | All access to the database from the company website is through this schema. |
+| Reports | All access to the database from Reporting Services reports is through this schema. |
+| PowerBI | All access to the database from the Power BI dashboards via the Enterprise Gateway is through this schema. |
+
+The Reports and PowerBI schemas are not used in the initial release of the sample database. However, all Reporting Services and Power BI samples built on top of this database are encouraged to use these schemas.
+
+#### Development schemas
+Special-purpose schemas
+
+| Schema | Description |
+| --- | ----------- |
+| Integration | Objects and procedures required for data warehouse integration (that is, migrating the data to the WideWorldImportersDW database). |
+| Sequences | Holds sequences used by all tables in the application. |
+
+### Tables
+All tables in the database are in the data schemas.
+
+#### Application schema
+Details of parameters and people (users and contacts), along with common reference tables (common to multiple other schemas).
+
+| Table | Description |
+| --- | ----------- |
+| SystemParameters | Contains system-wide configurable parameters. |
+| People | Contains user names, contact information, for all who use the application, and for the people that the Wide World Importers deals with at customer organizations. This table includes staff, customers, suppliers, and any other contacts. For people who have been granted permission to use the system or website, the information includes login details. |
+| Cities | There are many addresses stored in the system, for people, customer organization delivery addresses, pickup addresses at suppliers, etc. Whenever an address is stored, there is a reference to a city in this table. There is also a spatial location for each city. |
+| StateProvinces | Cities are part of states or provinces. This table has details of those, including spatial data describing the boundaries each state or province. |
+| Countries | States or Provinces are part of countries/regions. This table has details of those, including spatial data describing the boundaries of each country/region. |
+| DeliveryMethods | Choices for delivering stock items (for example, truck/van, post, pickup, courier, etc.) |
+| PaymentMethods | Choices for making payments (for example, cash, check, EFT, etc.) |
+| TransactionTypes | Types of customer, supplier, or stock transactions (for example, invoice, credit note, etc.) |
+
+#### Purchasing schema
+Details of suppliers and of stock item purchases.
+
+| Table | Description |
+| --- | ----------- |
+| Suppliers | Main entity table for suppliers (organizations) |
+| SupplierCategories | Categories for suppliers (for example, novelties, toys, clothing, packaging, etc.) |
+| SupplierTransactions | All financial transactions that are supplier-related (invoices, payments) |
+| PurchaseOrders | Details of supplier purchase orders |
+| PurchaseOrderLines | Detail lines from supplier purchase orders |
