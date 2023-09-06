@@ -15,3 +15,11 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - PGDATA=/var/lib/postgresql/pgdata
     restart: unless-stopped
+
+  adminer:
+    image: adminer:standalone
+    ports:
+      - "8080:8080"
+    depends_on:
+      - source_db
+    restart: unless-stopped
