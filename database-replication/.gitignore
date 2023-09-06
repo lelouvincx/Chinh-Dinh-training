@@ -1,3 +1,5 @@
 .venv/*
 .env
 .dockerignore
+.docker/backups/*
+restore.sql

@@ -9,6 +9,8 @@ services:
       - "5432:5432"
     volumes:
       - ${PWD}/.docker/data/postgres:/var/lib/postgresql/data
+      - ${PWD}/.docker/backups/postgres:/backups
+      - ${PWD}/.docker/postgres-add-de-user.sh:/docker-entrypoint-initdb.d/postgres-add-de-user.sh
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -18,6 +20,7 @@ services:
 
   adminer:
     image: adminer:standalone
+    container_name: "adminer"
     ports:
       - "8080:8080"
     depends_on:
