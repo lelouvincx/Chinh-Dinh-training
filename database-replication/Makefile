@@ -1,3 +1,6 @@
+include .env
+
+# Docker compose
 build:
 	docker compose build
 
@@ -18,3 +21,10 @@ restart:
 
 restart-d:
 	docker compose down && docker compose up -d
+
+# Postgres
+to-psql:
+	docker compose exec -it source_db psql postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+
+.SILENT:
+	to-psql
