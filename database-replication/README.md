@@ -50,9 +50,9 @@ Details of parameters and people (users and contacts), along with common referen
 | --- | ----------- |
 | SystemParameters | Contains system-wide configurable parameters. |
 | People | Contains user names, contact information, for all who use the application, and for the people that the Wide World Importers deals with at customer organizations. This table includes staff, customers, suppliers, and any other contacts. For people who have been granted permission to use the system or website, the information includes login details. |
-| Cities | There are many addresses stored in the system, for people, customer organization delivery addresses, pickup addresses at suppliers, etc. Whenever an address is stored, there is a reference to a city in this table. There is also a spatial location for each city. |
-| StateProvinces | Cities are part of states or provinces. This table has details of those, including spatial data describing the boundaries each state or province. |
-| Countries | States or Provinces are part of countries/regions. This table has details of those, including spatial data describing the boundaries of each country/region. |
+| Application.cities | There are many addresses stored in the system, for people, customer organization delivery addresses, pickup addresses at suppliers, etc. Whenever an address is stored, there is a reference to a city in this table. There is also a spatial location for each city. |
+| StateProvinces | Application.cities are part of states or provinces. This table has details of those, including spatial data describing the boundaries each state or province. |
+| countries | States or Provinces are part of countries/regions. This table has details of those, including spatial data describing the boundaries of each country/region. |
 | DeliveryMethods | Choices for delivering stock items (for example, truck/van, post, pickup, courier, etc.) |
 | PaymentMethods | Choices for making payments (for example, cash, check, EFT, etc.) |
 | TransactionTypes | Types of customer, supplier, or stock transactions (for example, invoice, credit note, etc.) |
@@ -67,3 +67,33 @@ Details of suppliers and of stock item purchases.
 | SupplierTransactions | All financial transactions that are supplier-related (invoices, payments) |
 | PurchaseOrders | Details of supplier purchase orders |
 | PurchaseOrderLines | Detail lines from supplier purchase orders |
+
+#### Sales schema
+Details of customers, salespeople, and of stock item sales.
+
+| Table | Description |
+| --- | ----------- |
+| Customers | Main entity tables for customers (organizations or individuals) |
+| CustomerCategories | Categories for customers (for example, novelty stores, supermarkets, etc.) |
+| BuyingGroups | Customer organizations can be part of groups that exert greater buying power |
+| CustomerTransactions | All financial transactions that are customer-related (invoices, payments) |
+| SpecialDeals | Special pricing. This can include fixed prices, discount in dollars or discount percent. |
+| Orders | Detail of customer orders |
+| OrderLines | Detail lines from customer orders |
+| Invoices | Details of customer invoices |
+| InvoiceLines | Detail lines from customer invoices |
+
+#### Warehouse schema
+Details of stock items, their holdings and transactions.
+
+| Table | Description |
+| --- | ----------- |
+| StockItems | Main entity table for stock items |
+| StockItemHoldings | Non-temporal columns for stock items. These are frequently updated columns. |
+| StockGroups | Groups for categorizing stock items (for example, novelties, toys, edible novelties, etc.) |
+| StockItemStockGroups | Which stock items are in which stock groups (many to many) |
+| Colors | Stock items can (optionally) have colors |
+| PackageTypes | Ways that stock items can be packaged (for example, box, carton, pallet, kg, etc. |
+| StockItemTransactions | Transactions covering all movements of all stock items (receipt, sale, write-off) |
+| VehicleTemperatures | Regularly recorded temperatures of vehicle chillers |
+| ColdRoomTemperatures | Regularly recorded temperatures of cold room chillers |
