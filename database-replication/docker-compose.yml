@@ -1,0 +1,18 @@
+version: "3.4"
+name: "local-db-replication"
+
+services:
+  source_db:
+    image: postgres:14-alpine
+    container_name: "source_db"
+    ports:
+      - "5432:5432"
+    volumes:
+      - ${PWD}/.docker/data/pgdata:/var/lib/postgresql/data/pgdata
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    restart: unless-stopped
+
+# volumes:
+#   .docker: {}
