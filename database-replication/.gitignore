@@ -1,4 +1,6 @@
 .venv/*
 .env
 .dockerignore
+.docker/data/*
 .docker/backups/*
+restore.log
