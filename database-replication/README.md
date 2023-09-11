@@ -119,13 +119,13 @@ Details of stock items, their holdings and transactions.
 4. Shell to postgres
 
 ```bash
-docker compose exec -it source_id /bin/bash
+docker compose exec -it source_db /bin/bash
 ```
 
 5. Restore (inside postgres container)
 
 ```bash
-pg_restore -h localhost -p 5432 -U admin -W -v -Fc -d wideworldimporters < wide_world_importers_pg.dump
+pg_restore -h localhost -p 5432 -U admin -W -v -Fc -d wideworldimporters < /backups/wide_world_importers_pg.dump
 ```
 
 Enter admin's password.
