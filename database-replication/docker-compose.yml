@@ -1,5 +1,5 @@
 version: "3.4"
-name: "local-db-replication"
+name: "db-replication"
 
 services:
   source_db:
@@ -32,3 +32,21 @@ services:
     depends_on:
       - source_db
     restart: unless-stopped
+
+  data_gen:
+    image: data-generator:localdev
+    container_name: "data_gen"
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./app:/app
+    env_file: .env
+    restart: on-failure
+    depends_on:
+      - source_db
+    healthcheck:
+      test: wget http://localhost:8501/
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
