@@ -4,15 +4,30 @@ from psql_connector import PsqlConnector
 
 import os
 import logging
+from os import environ as env
+from dotenv import load_dotenv
+
 logger = logging.getLogger(__name__)
-f_handler = logging.FileHandler(os.path.dirname(__file__) + f"/logs/{__name__}.log")
+f_handler = logging.FileHandler(
+    os.path.dirname(__file__) + f"/logs/{__name__}.log"
+)
 f_handler.setLevel(logging.DEBUG)
-f_format = logging.Formatter('[ %(asctime)s - %(levelname)s - %(name)s ] %(message)s')
+f_format = logging.Formatter(
+    "[ %(asctime)s - %(levelname)s - %(name)s ] %(message)s"
+)
 f_handler.setFormatter(f_format)
 logger.addHandler(f_handler)
 
 
-psql_params.host = "localhost"
+load_dotenv()
+psql_params = {
+    "host": env["POSTGRES_HOST"],
+    "port": env["POSTGRES_PORT"],
+    "user": env["POSTGRES_USER"],
+    "password": env["POSTGRES_PASSWORD"],
+    "database": env["POSTGRES_DB"],
+}
+
 psql_connector = PsqlConnector(psql_params)
 fake = Faker()
 
@@ -24,7 +39,8 @@ def gen_public_test(num_records: int) -> None:
                 sql_script = f"""
                     INSERT INTO public.test
                         (name, address, zipcode, introduction)
-                        VALUES ('{fake.name()}', '{fake.address()}', '{fake.zipcode()}', '{fake.text()}')
+                        VALUES ('{fake.name()}', '{fake.address()}', 
+                                '{fake.zipcode()}', '{fake.text()}')
                 """
                 logger.info(f"Inserting query: {sql_script}")
 

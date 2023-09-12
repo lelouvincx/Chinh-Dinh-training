@@ -36,7 +36,16 @@ app-requirements:
 docs:
 	dbdocs build docs/wideworldimporters.dbml
 
-ci: app-requirements
+format:
+	python -m black -S --line-length 79 --preview ./app
+
+lint:
+	python -m ruff check --fix ./app
+
+test:
+	python -m pytest --log-cli-level info -p no:warnings -v ./app
+
+ci: docs app-requirements format lint
 
 # ============ Postgres ============ 
 to-psql-default:

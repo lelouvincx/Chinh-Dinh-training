@@ -4,14 +4,15 @@ from psql_connector import PsqlConnector
 
 from os import environ as env
 from dotenv import load_dotenv
-load_dotenv(dotenv_path='.env')
+
+load_dotenv(dotenv_path=".env")
 
 psql_params = {
     "host": "source_db",
-    "port": env['POSTGRES_PORT'],
-    "user": env['POSTGRES_USER'],
-    "password": env['POSTGRES_PASSWORD'],
-    "database": env['POSTGRES_DB']
+    "port": env["POSTGRES_PORT"],
+    "user": env["POSTGRES_USER"],
+    "password": env["POSTGRES_PASSWORD"],
+    "database": env["POSTGRES_DB"],
 }
 
 psql_connector = PsqlConnector(psql_params)
@@ -22,7 +23,7 @@ schemas = []
 with psql_connector.connect() as engine:
     with engine.connect() as cursor:
         print("Connected to database")
-        sql_script = f"""
+        sql_script = """
             SELECT schema_name
             FROM information_schema.schemata;
         """
