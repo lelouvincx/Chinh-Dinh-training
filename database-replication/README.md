@@ -20,11 +20,15 @@
 
 ## Tasks
 
+Visit here: https://github.com/users/lelouvincx/projects/5/
+
 - [x] Design architecture
 - [x] Initialize Postgres with dataset
   - [x] Database catalog
 - [x] Build Flask application to fake generate data in realtime
-- [ ] Build kafka cluster with 3 nodes
+- [ ] Build Kafka Cluster with 3 nodes
+- [ ] Unittest for `Fake Data Generation` app
+  - [ ] TDD (Test Driven Development)
 
 ## Local development guide
 
