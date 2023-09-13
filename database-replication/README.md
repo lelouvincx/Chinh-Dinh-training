@@ -1,13 +1,81 @@
 # Project: Database Replication
 
+- [Project: Database Replication](#project-database-replication)
+  - [Tasks](#tasks)
+  - [Local development guide](#local-development-guide)
+    - [Prequisites](#prequisites)
+    - [Install codebase](#install-codebase)
+    - [Restore the database](#restore-the-database)
+  - [Design architecture](#design-architecture)
+  - [Database catalog](#database-catalog)
+    - [Schema](#schema)
+      - [Data schemas](#data-schemas)
+      - [Secure-access schemas](#secure-access-schemas)
+      - [Development schemas](#development-schemas)
+    - [Tables](#tables)
+      - [Application schema](#application-schema)
+      - [Purchasing schema](#purchasing-schema)
+      - [Sales schema](#sales-schema)
+      - [Warehouse schema](#warehouse-schema)
+
 ## Tasks
 
-- [ ] Design architecture
-- [ ] Initialize Postgres with dataset
-  - [ ] Database catalog
-- [ ] Build Flask application to fake generate data
+- [x] Design architecture
+- [x] Initialize Postgres with dataset
+  - [x] Database catalog
+- [x] Build Flask application to fake generate data in realtime
+- [ ] Build kafka cluster with 3 nodes
+
+## Local development guide
+
+### Prequisites
+- Python version >= 3.9 (3.11 recommended)
+- Docker with docker compose (at least 4 core and 4gb of RAM)
+
+### Install codebase
+1. Clone the repository & go to the project location (/database-replication)
+2. Install python dependencies
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r app/requirements.txt
+```
+3. Build docker images
+```bash
+docker build -t data-generator:localdev -f .docker/build/app/Dockerfile .
+```
+4. Start docker services
+```
+make up
+```
+5. Visit [Makefile](./Makefile) to short-binding commands
+
+### Restore the database
+
+1. Download dump file at https://github.com/Azure/azure-postgresql/blob/master/samples/databases/wide-world-importers/wide_world_importers_pg.dump
+2. Place it into ./.docker/backups/postgres
+3. Spawn up the postgres container, notice that there's 5 users: admin, azure_pg_admin, azure_superuser, greglow, data_engineer
+4. Shell to postgres
+
+```bash
+docker compose exec -it source_db /bin/bash
+```
+
+5. Restore (inside postgres container)
+
+```bash
+pg_restore -h localhost -p 5432 -U admin -W -v -Fc -d wideworldimporters < /backups/wide_world_importers_pg.dump
+```
+
+Then enter admin's password and take a coffee.
+
+## Design architecture
+
+![](./docs/images/database-replication.drawio.png)
 
 ## Database catalog
+
+Visit: https://dbdocs.io/lelouvincx/WideWorldImporters
 
 ### Schema
 
@@ -107,25 +175,3 @@ Details of stock items, their holdings and transactions.
 | StockItemTransactions | Transactions covering all movements of all stock items (receipt, sale, write-off)          |
 | VehicleTemperatures   | Regularly recorded temperatures of vehicle chillers                                        |
 | ColdRoomTemperatures  | Regularly recorded temperatures of cold room chillers                                      |
-
-## Restore the database
-
-1. Download dump file at https://github.com/Azure/azure-postgresql/blob/master/samples/databases/wide-world-importers/wide_world_importers_pg.dump
-
-2. Place it into ./.docker/backups/postgres
-
-3. Spawn up the postgres container, notice that there's 5 users: admin, azure_pg_admin, azure_superuser, greglow, data_engineer
-
-4. Shell to postgres
-
-```bash
-docker compose exec -it source_db /bin/bash
-```
-
-5. Restore (inside postgres container)
-
-```bash
-pg_restore -h localhost -p 5432 -U admin -W -v -Fc -d wideworldimporters < /backups/wide_world_importers_pg.dump
-```
-
-Enter admin's password.
