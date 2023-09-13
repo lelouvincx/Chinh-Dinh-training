@@ -9,13 +9,9 @@ from dotenv import load_dotenv
 
 
 logger = logging.getLogger(__name__)
-f_handler = logging.FileHandler(
-    os.path.dirname(__file__) + f"/logs/{__name__}.log"
-)
+f_handler = logging.FileHandler(os.path.dirname(__file__) + f"/logs/{__name__}.log")
 f_handler.setLevel(logging.DEBUG)
-f_format = logging.Formatter(
-    "[ %(asctime)s - %(levelname)s - %(name)s ] %(message)s"
-)
+f_format = logging.Formatter("[ %(asctime)s - %(levelname)s - %(name)s ] %(message)s")
 f_handler.setFormatter(f_format)
 logger.addHandler(f_handler)
 

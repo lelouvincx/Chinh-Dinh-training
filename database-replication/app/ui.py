@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 import streamlit as st
 import pandas as pd
 from sqlalchemy import text
@@ -16,10 +17,7 @@ load_dotenv(dotenv_path=".env")
 logging.basicConfig(
     level=logging.INFO,
     format="[ %(name)s - %(asctime)s %(levelname)s ] %(message)s",
-    handlers=[
-        logging.FileHandler("./logs/streamlit.log"),
-        logging.StreamHandler()
-    ]
+    handlers=[logging.FileHandler("./logs/streamlit.log"), logging.StreamHandler()],
 )
 
 # Init psql connector
@@ -54,9 +52,31 @@ with psql_connector.connect() as engine:
         """
         schemas = cursor.execute(text(sql_script)).fetchall()
         # Remove system schemas
-        schemas = [schema[0] for schema in schemas if schema[0] not in ["pg_toast", "pg_temp_1", "pg_toast_temp_1", "pg_catalog", "information_schema"]]
+        schemas = [
+            schema[0]
+            for schema in schemas
+            if schema[0]
+            not in [
+                "pg_toast",
+                "pg_temp_1",
+                "pg_toast_temp_1",
+                "pg_catalog",
+                "information_schema",
+            ]
+        ]
         # Remove schemas: data_load_simulation, integration, power_bi, reports, sequences
-        schemas = [schema for schema in schemas if schema not in ["data_load_simulation", "integration", "power_bi", "reports", "sequences"]]
+        schemas = [
+            schema
+            for schema in schemas
+            if schema
+            not in [
+                "data_load_simulation",
+                "integration",
+                "power_bi",
+                "reports",
+                "sequences",
+            ]
+        ]
 
 # Select schema
 st_schema = st.selectbox("Select schema", schemas)
@@ -109,17 +129,22 @@ st_table = "test"
 st.write("## [Try] Generate fake data")
 num_records = st.number_input("Number of records", min_value=1, max_value=10, value=1)
 if st.button(f"Generate to {st_schema}.{st_table}"):
-    gen_public_test(connector=psql_connector, num_records=num_records)
+    gen_public_test(connector=psql_connector, num_records=int(num_records))
 
 
 # Option to generate data through a period of time
 st.write("## [Realtime] Generate fake data through a period of time")
 period = st.number_input("Period (in seconds)", min_value=1, max_value=600, value=5)
-num_records = st.number_input("Number of records each time", min_value=1, max_value=10, value=1)
+num_records = st.number_input(
+    "Number of records each time", min_value=1, max_value=10, value=1
+)
 times = st.number_input("Number of times", min_value=1, max_value=100, value=5)
 
-st.write(f"Generating total {num_records * times} records to {st_schema}.{st_table} through {period * times} seconds")
+st.write(
+    f"Generating total {num_records * times} records to {st_schema}.{st_table} through"
+    f" {period * times} seconds"
+)
 if st.button("Start generating"):
-    for _ in range(times):
-        gen_public_test(connector=psql_connector, num_records=num_records)
+    for _ in range(int(times)):
+        gen_public_test(connector=psql_connector, num_records=int(num_records))
         time.sleep(period)

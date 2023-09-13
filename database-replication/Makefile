@@ -37,7 +37,7 @@ docs:
 	dbdocs build docs/wideworldimporters.dbml
 
 format:
-	python -m black -S --line-length 79 --preview ./app
+	python -m black -S --line-length 88 --preview ./app
 
 lint:
 	python -m ruff check --fix ./app
@@ -49,11 +49,7 @@ ci: docs app-requirements format lint
 
 # ============ Postgres ============ 
 to-psql-default:
-	docker compose exec -it source_db psql postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/postgres
+	@docker compose exec -it source_db psql postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/postgres
 
 to-psql:
-	docker compose exec -it source_db psql postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
-
-.SILENT:
-	to-psql
-	to-psql-default
+	@docker compose exec -it source_db psql postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}

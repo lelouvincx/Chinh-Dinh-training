@@ -1,7 +1,7 @@
-create table public.test (
-	id serial primary key,
-	name varchar(20) not null,
-	address varchar(100) not null,
-	zipcode char(5),
-	introduction text
+CREATE TABLE public.test (
+	id SERIAL PRIMARY KEY,
+	name VARCHAR(20) NOT NULL,
+	address VARCHAR(100) NOT NULL,
+	zipcode CHAR(5),
+	introduction TEXT
 );
