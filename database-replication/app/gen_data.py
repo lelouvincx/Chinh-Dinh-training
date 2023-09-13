@@ -7,6 +7,7 @@ import logging
 from os import environ as env
 from dotenv import load_dotenv
 
+
 logger = logging.getLogger(__name__)
 f_handler = logging.FileHandler(
     os.path.dirname(__file__) + f"/logs/{__name__}.log"
@@ -28,13 +29,13 @@ psql_params = {
     "database": env["POSTGRES_DB"],
 }
 
-psql_connector = PsqlConnector(psql_params)
+
 fake = Faker()
 
 
-def gen_public_test(num_records: int) -> None:
+def gen_public_test(connector: PsqlConnector, num_records: int = 1) -> None:
     for _ in range(num_records):
-        with psql_connector.connect() as engine:
+        with connector.connect() as engine:
             with engine.connect() as cursor:
                 sql_script = f"""
                     INSERT INTO public.test
@@ -49,4 +50,5 @@ def gen_public_test(num_records: int) -> None:
 
 
 if __name__ == "__main__":
-    gen_public_test(1)
+    psql_connector = PsqlConnector(psql_params)
+    gen_public_test(connector=psql_connector, num_records=1)

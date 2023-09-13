@@ -35,7 +35,7 @@ class PsqlConnector:
             self.params["port"],
             self.params["database"],
         )
-        logging.info(f"Creating config string: {conn_info}")
+        logging.debug(f"Creating config string: {conn_info}")
         db_conn = create_engine(conn_info)
         try:
             yield db_conn
