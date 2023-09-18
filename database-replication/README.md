@@ -48,11 +48,22 @@ pip install -r app/requirements.txt
 ```bash
 docker build -t data-generator:localdev -f .docker/build/app/Dockerfile .
 ```
-4. Start docker services
+4. Create necessary volumes
+```bash
+mkdir -p .docker/backups/postgres
+mkdir -p .docker/data/postgres
+
+mkdir -p .docker/data/zookeeper
+sudo chown -R 1001:1001 .docker/data/zookeeper
+
+mkdir -p .docker/data/kafka
+sudo chown -R 1001:1001 .docker/data/kafka
+```
+5. Start docker services
 ```
 make up
 ```
-5. Visit [Makefile](./Makefile) to short-binding commands
+6. Visit [Makefile](./Makefile) to short-binding commands
 
 ### Restore the database
 
@@ -179,3 +190,11 @@ Details of stock items, their holdings and transactions.
 | StockItemTransactions | Transactions covering all movements of all stock items (receipt, sale, write-off)          |
 | VehicleTemperatures   | Regularly recorded temperatures of vehicle chillers                                        |
 | ColdRoomTemperatures  | Regularly recorded temperatures of cold room chillers                                      |
+
+## Troubleshoot
+
+- Cannot create directory '/bitnami/...'. You should chown to your docker user's id. [Refer here](https://github.com/bitnami/containers/issues/41422#issuecomment-1674497129)
+```bash
+sudo chown -R 1001:1001 .docker/data/kafka
+sudo chown -R 1001:1001 .docker/data/zookeeper
+```
