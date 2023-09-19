@@ -28,6 +28,10 @@ restart-build-d: down up-build-d
 sleep:
 	sleep 20
 
+# ============ Build images ============ 
+build-upstream-app:
+	docker build -t upstream-app:dev -f .docker/images/app/Dockerfile .
+
 # ============ Testing, formatting, type checks, link checks ============ 
 app-requirements:
 	rm app/requirements.txt && \
