@@ -11,17 +11,18 @@ Project WideWorldImporters {
 
 These schemas contain the data. Many tables are needed by all other schemas and are located in the Application schema.
 
-| Schema | Description |
-| --- | ----------- |
-| Application | Application-wide users, contacts, and parameters. This schema also contains reference tables with data that is used by multiple schemas |
-| Purchasing | Stock item purchases from suppliers and details about suppliers. | 
-| Sales | Stock item sales to retail customers, and details about customers and sales people. | 
-| Warehouse | Stock item inventory and transactions. | 
-| Website | All access to the database from the company website is through this schema. |
-| Reports | All access to the database from Reporting Services reports is through this schema. |
-| PowerBI | All access to the database from the Power BI dashboards via the Enterprise Gateway is through this schema. |
-| Integration | Objects and procedures required for data warehouse integration (that is, migrating the data to the WideWorldImportersDW database). |
-| Sequences | Holds sequences used by all tables in the application. |
+| Schema | Description | Status
+| --- | ----------- | ---
+| Application | Application-wide users, contacts, and parameters. This schema also contains reference tables with data that is used by multiple schemas | In use
+| Purchasing | Stock item purchases from suppliers and details about suppliers. | In use
+| Sales | Stock item sales to retail customers, and details about customers and sales people. | In use
+| Warehouse | Stock item inventory and transactions. | In use
+| Public | Public schema to hold dump tables | In use
+| Website | All access to the database from the company website is through this schema. | Idle
+| Reports | All access to the database from Reporting Services reports is through this schema. | Idle
+| PowerBI | All access to the database from the Power BI dashboards via the Enterprise Gateway is through this schema. | Idle
+| Integration | Objects and procedures required for data warehouse integration (that is, migrating the data to the WideWorldImportersDW database). | Idle
+| Sequences | Holds sequences used by all tables in the application. | Idle
 
   '''
 }
@@ -456,6 +457,15 @@ TABLE Warehouse.stock_items {
     search_details text
     last_edited_by integer
     note: "Main entity table for stock items"
+}
+
+TABLE Public.test {
+    id integer [primary key]
+    name varchar(20)
+    address varchar(100)
+    zipcode char(5)
+    introduction text
+    note: "Sample table"
 }
 
 Ref: Application.cities.last_edited_by > Application.people.person_id
