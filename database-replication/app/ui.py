@@ -1,4 +1,4 @@
-# ruff: noqa: E501
+from sqlalchemy.util import to_list
 import streamlit as st
 import pandas as pd
 from sqlalchemy import text
@@ -15,7 +15,7 @@ load_dotenv(dotenv_path=".env")
 
 # Init logging
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.NOTSET,
     format="[ %(name)s - %(asctime)s %(levelname)s ] %(message)s",
     handlers=[logging.FileHandler("./logs/streamlit.log"), logging.StreamHandler()],
 )
@@ -86,13 +86,14 @@ st_schema = st.selectbox("Select schema", schemas)
 tables = []
 with psql_connector.connect() as engine:
     with engine.connect() as cursor:
-        logging.info("Connected to database")
+        logging.debug("Connected to database")
         sql_script = f"""
             SELECT table_name
             FROM information_schema.tables
             WHERE table_schema = '{st_schema}';
         """
-        tables = cursor.execute(text(sql_script)).fetchall()
+        tables = to_list(cursor.execute(text(sql_script)).fetchall())
+        logging.debug(f"Tables type: {type(tables)}")
         # Remove outlines pattern for each table
         for table in tables:
             tables[tables.index(table)] = table[0]
@@ -105,14 +106,14 @@ st_table = st.selectbox("Select table", tables)
 if st.toggle("View first 10 rows"):
     with psql_connector.connect() as engine:
         with engine.connect() as cursor:
-            logging.info("Connected to database")
+            logging.debug("Connected to database")
             sql_script = f"""
                 SELECT *
                 FROM {st_schema}.{st_table}
                 LIMIT 10;
             """
             df = cursor.execute(text(sql_script)).fetchall()
-            # Turn df to pandas dataframe
+            # Turn df to pandas.DataFrame
             df = pd.DataFrame(df)
             st.dataframe(df)
             sql_script = f"""

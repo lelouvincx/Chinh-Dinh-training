@@ -22,7 +22,7 @@ services:
       interval: 1m30s
       timeout: 30s
       retries: 5
-      start_period: 30s
+      start_period: 10s
 
   adminer:
     image: adminer:standalone
@@ -33,9 +33,9 @@ services:
       - source_db
     restart: unless-stopped
 
-  data_gen:
-    image: data-generator:localdev
-    container_name: "data_gen"
+  upstream-app:
+    image: upstream-app:dev
+    container_name: "upstream-app"
     ports:
       - "8501:8501"
     volumes:
@@ -49,10 +49,10 @@ services:
       interval: 1m30s
       timeout: 30s
       retries: 5
-      start_period: 30s
+      start_period: 10s
 
   zookeeper:
-    image: docker.io/bitnami/zookeeper:3.8
+    image: bitnami/zookeeper:3.8
     container_name: zookeeper
     ports:
       - "2181:2181"
@@ -60,40 +60,103 @@ services:
       - .docker/data/zookeeper:/bitnami/zookeeper
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
+      - ZOO_SYNC_LIMIT=7 # How far out of date a server can be from a leader
+      # - ZOO_ENABLE_PROMETHEUS_METRICS=yes
+      - ZOO_LOG_LEVEL=DEBUG
     restart: unless-stopped
-    healthcheck:
-      test: nc -z localhost 2181 | exit 1
-      interval: 1m30s
-      timeout: 30s
-      retries: 5
-      start_period: 30s
+    networks:
+      - kafka_networks
 
   kafka-0:
-    image: docker.io/bitnami/kafka:3.4
-    container_name: kafka-broker-0
+    image: bitnami/kafka:3.5
+    container_name: kafka-server
     ports:
       - "9092:9092"
+      - ":9093"
     volumes:
-      - .docker/data/kafka:/bitnami/kafka
+      - .docker/data/kafka-0:/bitnami/kafka
+      - .docker/log/kafka-0:/tmp/kafka_mounts/logs
+    env_file: .env
     environment:
-      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
-    depends_on:
-      - zookeeper
-    restart: unless-stopped
+      - KAFKA_CFG_NODE_ID=0
+      # - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+    # depends_on:
+    #   - zookeeper
+    networks:
+      - kafka_networks
     healthcheck:
-      test: nc -z localhost 9092 | exit 1
-      interval: 1m30s
-      timeout: 30s
-      retries: 5
-      start_period: 30s
+      test: kafka-topics.sh --list --bootstrap-server kafka-server:9092 || exit -1
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 15s
 
-  kafka-manager:
-    image: docker.io/sheepkiller/kafka-manager
-    container_name: kafka-manager
+  kafka-1:
+    image: bitnami/kafka:3.5
+    container_name: kafka-1
     ports:
-      - "9000:9000"
+      - ":9092"
+      - ":9093"
+    volumes:
+      - .docker/data/kafka-1:/bitnami/kafka
+      - .docker/log/kafka-1:/tmp/kafka_mounts/logs
+    env_file: .env
     environment:
-      - ZK_HOSTS=zookeeper:2181
-      - APPLICATION_SECRET=letmein
-    depends_on:
-      - zookeeper
+      - KAFKA_CFG_NODE_ID=1
+    networks:
+      - kafka_networks
+    healthcheck:
+      test: kafka-topics.sh --list --bootstrap-server kafka-server:9092 || exit -1
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 15s
+
+  kafka-2:
+    image: bitnami/kafka:3.5
+    container_name: kafka-2
+    ports:
+      - ":9092"
+      - ":9093"
+    volumes:
+      - .docker/data/kafka-2:/bitnami/kafka
+      - .docker/log/kafka-2:/tmp/kafka_mounts/logs
+    env_file: .env
+    environment:
+      - KAFKA_CFG_NODE_ID=2
+    networks:
+      - kafka_networks
+    healthcheck:
+      test: kafka-topics.sh --list --bootstrap-server kafka-server:9092 || exit -1
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 15s
+
+  kafka-connect:
+    image: bitnami/kafka:3.5
+    container_name: kafka-connect
+    ports:
+      - "8083:8083"
+    volumes:
+      - .docker/data/kafka-connect:/bitnami/kafka
+      - ./.docker/connect-distributed.properties:/opt/bitnami/kafka/config/connect-distributed.properties
+    command: /opt/bitnami/kafka/bin/connect-distributed.sh /opt/bitnami/kafka/config/connect-distributed.properties
+    networks:
+      - kafka_networks
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-manager-ui
+    ports:
+      - "8000:8080"
+    env_file: .env
+    networks:
+      - kafka_networks
+    depends_on: # WARN: Not working if kafka-0 down, but if depends on the env configs
+      - kafka-0
+
+
+networks:
+  kafka_networks:
+    driver: bridge
