@@ -3,18 +3,17 @@ from contextlib import contextmanager
 
 import os
 import logging
-from dotenv import load_dotenv
 
 
-load_dotenv()
-
-
-logger = logging.getLogger(__name__)
-f_handler = logging.FileHandler(os.path.dirname(__file__) + f"/logs/{__name__}.log")
-f_handler.setLevel(logging.INFO)
-f_format = logging.Formatter("[%(asctime)s - %(name)s - %(levelname)s ] %(message)s")
-f_handler.setFormatter(f_format)
-logger.addHandler(f_handler)
+# Init logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="[ %(name)s - %(asctime)s %(levelname)s ] %(message)s",
+    handlers=[
+        logging.FileHandler(os.path.dirname(__file__) + f"/logs/{__name__}.log"),
+        logging.StreamHandler(),
+    ],
+)
 
 
 class PsqlConnector:
@@ -31,10 +30,8 @@ class PsqlConnector:
             self.params["port"],
             self.params["database"],
         )
-        logging.debug(f"Creating config string: {conn_info}")
         db_conn = create_engine(conn_info)
         try:
             yield db_conn
         except Exception as e:
             logging.exception(f"Error when connecting to Postgres: {e}")
-            logger.exception(f"Error when connecting to Postgres: {e}")
