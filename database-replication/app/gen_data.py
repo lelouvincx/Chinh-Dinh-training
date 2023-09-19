@@ -94,7 +94,7 @@ class Table:
 
                 fetch_result = cursor.execute(text(sql_script)).fetchone() or []
                 # Current type: sqlalchemy.engine.row.Row
-                fetch_result = fetch_result[0] or {} # Current type: dict
+                fetch_result = fetch_result[0] or {}  # Current type: dict
 
                 new_attributes = fetch_result.get(self.get_name()) or []
 
