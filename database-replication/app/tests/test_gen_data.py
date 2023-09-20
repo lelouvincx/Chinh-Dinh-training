@@ -47,7 +47,7 @@ class TestTable:
         temp_table = Table(schema=temp_table_schema, name="temp_table")
         is_changed = temp_table.update_attributes(psql_connector)
 
-        assert (is_changed is True), "Attributes not changed."
+        assert is_changed is True, "Attributes not changed."
 
     @pytest.mark.skip(reason="Not implemented due to WIP")
     @pytest.mark.dependency(depends=["TEST_CONNECTING"])
