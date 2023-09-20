@@ -49,7 +49,7 @@ lint:
 test:
 	python -m pytest --log-cli-level info -p no:warnings -v ./app
 
-ci: docs app-requirements format lint
+ci: docs app-requirements lint format
 
 # ============ Postgres ============ 
 to-psql-default:

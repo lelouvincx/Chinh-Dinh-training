@@ -12,11 +12,13 @@ confluent-kafka = "^2.2.0"
 ruff = "^0.0.287"
 black = "^23.9.1"
 pytest = "^7.4.2"
+pytest-dependency = "^0.5.1"
+pytest-ordering = "^0.6"
 
 [tool.ruff]
 # Enable rule pycodestyle
 select = ["E"]
-ignore = ["E501", "E101"]
+ignore = ["E501", "E101", "E402"]
 
 # Allow autofix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]
@@ -24,7 +26,7 @@ unfixable = []
 
 # Maximum line length is same as black
 line-length = 88
-src = ["app"]
+src = ["app/app"]
 
 # Exclude a variety of commonly ignored directories.
 exclude = [

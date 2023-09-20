@@ -10,6 +10,6 @@ RUN pip install --no-cache-dir -r /app/requirements.txt
 RUN apt-get update && apt-get install -y curl && \
   apt-get autoremove -y
 
-COPY app/ .
+COPY app/app .
 
-CMD [ "streamlit", "run", "ui.py", "--server.address=0.0.0.0" ]
+CMD [ "streamlit", "run", "streamlit_app.py", "--server.address=0.0.0.0" ]

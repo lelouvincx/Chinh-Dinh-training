@@ -39,7 +39,7 @@ services:
     ports:
       - "8501:8501"
     volumes:
-      - ./app:/app
+      - ./app/app:/app
     env_file: .env
     restart: on-failure
     depends_on:

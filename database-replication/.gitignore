@@ -2,3 +2,4 @@
 .docker/backups/*
 restore.log
 database-replication.code-workspace
+htmlcov/
