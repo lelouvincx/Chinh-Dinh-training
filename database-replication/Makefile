@@ -37,7 +37,7 @@ app-requirements:
 	rm app/requirements.txt && \
 		pip freeze > app/requirements.txt
 
-docs:
+db-docs:
 	dbdocs build docs/wideworldimporters.dbml
 
 format:
@@ -49,7 +49,7 @@ lint:
 test:
 	python -m pytest --log-cli-level info -p no:warnings -v ./app
 
-ci: docs app-requirements lint format
+ci: db-docs app-requirements format lint
 
 # ============ Postgres ============ 
 to-psql-default:
