@@ -4,10 +4,12 @@ WORKDIR /app
 
 RUN python3 -m venv .venv
 RUN pip install pip --upgrade
-
 COPY app/requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r /app/requirements.txt
 
-COPY app/ .
+RUN apt-get update && apt-get install -y curl && \
+  apt-get autoremove -y
 
-CMD [ "streamlit", "run", "ui.py", "--server.address=0.0.0.0" ]
+COPY app/app .
+
+CMD [ "streamlit", "run", "streamlit_app.py", "--server.address=0.0.0.0" ]

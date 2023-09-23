@@ -1,6 +1,6 @@
 from sqlalchemy import text
 from faker import Faker
-from psql_connector import PsqlConnector
+from app.psql_connector import PsqlConnector
 
 import os
 import logging
@@ -60,7 +60,7 @@ class Table:
         self._attributes = attributes
 
     # Methods
-    def update_attributes(self, connector: PsqlConnector) -> None:
+    def update_attributes(self, connector: PsqlConnector) -> bool:
         with connector.connect() as engine:
             with engine.connect() as cursor:
                 sql_script = f"""
@@ -100,9 +100,11 @@ class Table:
 
                 if new_attributes == self._attributes:
                     logger.info("There's nothing to change")
+                    return False
                 else:
                     self.set_attributes(new_attributes)
                     logger.info("Table attributes are updated")
+                    return True
 
 
 def gen_public_test(connector: PsqlConnector, num_records: int = 1) -> None:
