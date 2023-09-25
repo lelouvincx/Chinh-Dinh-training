@@ -28,7 +28,7 @@ class TestTable:
                         id serial PRIMARY KEY,
                         name VARCHAR(50),
                         age INT
-                    )
+                    );
                 """)
                 cursor.execute(sql_script)
                 cursor.commit()
