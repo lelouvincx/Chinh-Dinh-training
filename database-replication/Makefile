@@ -47,7 +47,10 @@ lint:
 	python -m ruff check --fix ./app
 
 test:
-	python -m pytest --log-cli-level info -p no:warnings -v ./app
+	python -m pytest --log-cli-level info -p no:warnings -v ./app/tests/
+
+cov:
+	python -m pytest --log-cli-level info -p no:warnings --cov -v ./app/tests/
 
 ci: db-docs app-requirements format lint
 
