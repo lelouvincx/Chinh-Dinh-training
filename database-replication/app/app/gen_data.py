@@ -1,6 +1,11 @@
 from sqlalchemy import text
 from faker import Faker
-from app.psql_connector import PsqlConnector
+try:
+    # Try importing for unit testing
+    from app.psql_connector import PsqlConnector
+except ImportError:
+    # Try importing for upstream app
+    from psql_connector import PsqlConnector
 
 import os
 import logging
@@ -89,7 +94,7 @@ class Table:
                     SELECT json_object_agg(agg.table_name, agg.attrs)
                     FROM agg;
                 """
-                logger.info(f"Fetching table {self._schema}.{self._name} from database")
+                logger.info(f"Fetching attributes of table {self._schema}.{self._name}")
                 logger.debug(f"With query {sql_script}")
 
                 fetch_result = cursor.execute(text(sql_script)).fetchone() or []

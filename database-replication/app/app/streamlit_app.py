@@ -2,7 +2,7 @@ from sqlalchemy.util import to_list
 import streamlit as st
 import pandas as pd
 from sqlalchemy import text
-from app.psql_connector import PsqlConnector
+from psql_connector import PsqlConnector
 
 from gen_data import gen_public_test
 
