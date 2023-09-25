@@ -54,15 +54,13 @@ services:
   zookeeper:
     image: bitnami/zookeeper:3.8
     container_name: zookeeper
-    ports:
-      - "2181:2181"
     volumes:
       - .docker/data/zookeeper:/bitnami/zookeeper
     environment:
+      - ZOO_SERVER_ID=0
       - ALLOW_ANONYMOUS_LOGIN=yes
       - ZOO_SYNC_LIMIT=7 # How far out of date a server can be from a leader
-      # - ZOO_ENABLE_PROMETHEUS_METRICS=yes
-      - ZOO_LOG_LEVEL=DEBUG
+      - ZOO_LOG_LEVEL=INFO
     restart: unless-stopped
     networks:
       - kafka_networks
@@ -72,16 +70,19 @@ services:
     container_name: kafka-server
     ports:
       - "9092:9092"
-      - ":9093"
     volumes:
       - .docker/data/kafka-0:/bitnami/kafka
       - .docker/log/kafka-0:/tmp/kafka_mounts/logs
-    env_file: .env
     environment:
-      - KAFKA_CFG_NODE_ID=0
-      # - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
-    # depends_on:
-    #   - zookeeper
+      - KAFKA_BROKER_ID=0
+      - ALLOW_PLAINTEXT_LISTENER=true
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka-0:9092
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_CFG_LOG_DIRS=/tmp/kafka_mounts/logs
+    restart: unless-stopped
+    depends_on:
+      - zookeeper
     networks:
       - kafka_networks
     healthcheck:
@@ -96,17 +97,23 @@ services:
     container_name: kafka-1
     ports:
       - ":9092"
-      - ":9093"
     volumes:
       - .docker/data/kafka-1:/bitnami/kafka
       - .docker/log/kafka-1:/tmp/kafka_mounts/logs
-    env_file: .env
     environment:
-      - KAFKA_CFG_NODE_ID=1
+      - KAFKA_BROKER_ID=1
+      - ALLOW_PLAINTEXT_LISTENER=true
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka-1:9092
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_CFG_LOG_DIRS=/tmp/kafka_mounts/logs
+    restart: unless-stopped
+    depends_on:
+      - zookeeper
     networks:
       - kafka_networks
     healthcheck:
-      test: kafka-topics.sh --list --bootstrap-server kafka-server:9092 || exit -1
+      test: kafka-topics.sh --list --bootstrap-server kafka-1:9092 || exit -1
       interval: 5s
       timeout: 10s
       retries: 10
@@ -117,33 +124,47 @@ services:
     container_name: kafka-2
     ports:
       - ":9092"
-      - ":9093"
     volumes:
       - .docker/data/kafka-2:/bitnami/kafka
       - .docker/log/kafka-2:/tmp/kafka_mounts/logs
-    env_file: .env
     environment:
-      - KAFKA_CFG_NODE_ID=2
+      - KAFKA_BROKER_ID=2
+      - ALLOW_PLAINTEXT_LISTENER=true
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka-2:9092
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_CFG_LOG_DIRS=/tmp/kafka_mounts/logs
+    restart: unless-stopped
+    depends_on:
+      - zookeeper
     networks:
       - kafka_networks
     healthcheck:
-      test: kafka-topics.sh --list --bootstrap-server kafka-server:9092 || exit -1
+      test: kafka-topics.sh --list --bootstrap-server kafka-2:9092 || exit -1
       interval: 5s
       timeout: 10s
       retries: 10
       start_period: 15s
 
   kafka-connect:
-    image: bitnami/kafka:3.5
+    image: confluentinc/cp-kafka-connect:7.5.0.amd64
     container_name: kafka-connect
     ports:
-      - "8083:8083"
-    volumes:
-      - .docker/data/kafka-connect:/bitnami/kafka
-      - ./.docker/connect-distributed.properties:/opt/bitnami/kafka/config/connect-distributed.properties
-    command: /opt/bitnami/kafka/bin/connect-distributed.sh /opt/bitnami/kafka/config/connect-distributed.properties
+      - "9092"
+      - "8083"
+    env_file: .env
+    restart: unless-stopped
+    depends_on:
+      - zookeeper
+      - kafka-0
     networks:
       - kafka_networks
+    healthcheck:
+      test: curl http://localhost:8083 || exit -1
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
@@ -151,11 +172,11 @@ services:
     ports:
       - "8000:8080"
     env_file: .env
+    depends_on:
+      - zookeeper
+      - kafka-0
     networks:
       - kafka_networks
-    depends_on: # WARN: Not working if kafka-0 down, but if depends on the env configs
-      - kafka-0
-
 
 networks:
   kafka_networks:
