@@ -1,5 +1,5 @@
 version: "3.4"
-name: "db-replication"
+name: "database-replication"
 
 services:
   source_db:
@@ -34,7 +34,9 @@ services:
     restart: unless-stopped
 
   upstream-app:
-    image: upstream-app:dev
+    build:
+      context: .
+      dockerfile: .docker/images/app/Dockerfile
     container_name: "upstream-app"
     ports:
       - "8501:8501"
