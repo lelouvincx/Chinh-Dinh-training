@@ -155,10 +155,9 @@ services:
       start_period: 15s
 
   kafka-connect:
-    image: confluentinc/cp-kafka-connect:7.5.0.amd64
+    image: confluentinc/cp-server-connect:7.1.1
     container_name: kafka-connect
     ports:
-      - "9092"
       - "8083:8083"
     environment:
       - CONNECT_BOOTSTRAP_SERVERS=${CONNECT_BOOTSTRAP_SERVERS}

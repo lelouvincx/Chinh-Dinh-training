@@ -1,5 +1,6 @@
 from sqlalchemy import text
 from faker import Faker
+
 try:
     # Try importing for unit testing
     from app.psql_connector import PsqlConnector
