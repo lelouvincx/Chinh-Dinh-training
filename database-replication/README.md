@@ -202,3 +202,4 @@ sudo chown -R 1001:1001 .docker/data/zookeeper
 ## References
 - [Kafka Cluster with Zookeeper (3 broker - 1 zoo) as containers](https://www.reddit.com/r/apachekafka/comments/tsr9dx/docker_compose_file_for_kafka_and_kafka_connect/)
 - [Bitnami's Kafka image](https://github.com/bitnami/containers/blob/main/bitnami/kafka/README.md)
+- [Kafka Concepts (Viet version)](https://viblo.asia/p/010-apache-kafka-connect-concept-gAm5ymNL5db)

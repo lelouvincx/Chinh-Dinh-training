@@ -151,7 +151,7 @@ services:
     container_name: kafka-connect
     ports:
       - "9092"
-      - "8083"
+      - "8083:8083"
     env_file: .env
     restart: unless-stopped
     depends_on:
