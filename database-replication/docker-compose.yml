@@ -40,7 +40,12 @@ services:
       - "8501:8501"
     volumes:
       - ./app/app:/app
-    env_file: .env
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_DB=${POSTGRES_DB}
     restart: on-failure
     depends_on:
       - source_db
@@ -59,7 +64,8 @@ services:
     environment:
       - ZOO_SERVER_ID=0
       - ALLOW_ANONYMOUS_LOGIN=yes
-      - ZOO_SYNC_LIMIT=7 # How far out of date a server can be from a leader
+      # How far out of date a server can be from a leader
+      - ZOO_SYNC_LIMIT=7 
       - ZOO_LOG_LEVEL=INFO
     restart: unless-stopped
     networks:
@@ -152,7 +158,18 @@ services:
     ports:
       - "9092"
       - "8083:8083"
-    env_file: .env
+    environment:
+      - CONNECT_BOOTSTRAP_SERVERS=${CONNECT_BOOTSTRAP_SERVERS}
+      - CONNECT_GROUP_ID=kafka-connectx
+      - CONNECT_CONFIG_STORAGE_TOPIC=_kafka-connectx-config
+      - CONNECT_OFFSET_STORAGE_TOPIC=_kafka-connectx-offsets
+      - CONNECT_STATUS_STORAGE_TOPIC=_kafka-connectx-status
+      - CONNECT_KEY_CONVERTER=org.apache.kafka.connect.json.JsonConverter
+      - CONNECT_VALUE_CONVERTER=org.apache.kafka.connect.json.JsonConverter
+      - CONNECT_INTERNAL_KEY_CONVERTER=org.apache.kafka.connect.json.JsonConverter
+      - CONNECT_INTERNAL_VALUE_CONVERTER=org.apache.kafka.connect.json.JsonConverter
+      - CONNECT_REST_ADVERTISED_HOST_NAME=localhost
+      - CONNECT_PLUGIN_PATH=/usr/share/java,/usr/share/confluent-hub-components
     restart: unless-stopped
     depends_on:
       - zookeeper
@@ -171,7 +188,13 @@ services:
     container_name: kafka-manager-ui
     ports:
       - "8000:8080"
-    env_file: .env
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=${KAFKA_CLUSTERS_0_NAME}
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=${KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS}
+      - KAFKA_CLUSTERS_0_ZOOKEEPER=${KAFKA_CLUSTERS_0_ZOOKEEPER}
+      - KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL=${KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL}
+      - KAFKA_CLUSTERS_0_PROPERTIES_SASL_MECHANISM=${KAFKA_CLUSTERS_0_PROPERTIES_SASL_MECHANISM}
+      - KAFKA_CLUSTERS_0_PROPERTIES_SASL_JAAS_CONFIG=${KAFKA_CLUSTERS_0_PROPERTIES_SASL_JAAS_CONFIG}
     depends_on:
       - zookeeper
       - kafka-0
