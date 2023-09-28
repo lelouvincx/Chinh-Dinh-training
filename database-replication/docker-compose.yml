@@ -17,6 +17,9 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
       - PGDATA=/var/lib/postgresql/pgdata
     restart: unless-stopped
+    networks:
+      - upstream_app_networks
+      - kafka_networks
     healthcheck:
       test: pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
       interval: 30s
@@ -31,6 +34,8 @@ services:
       - "8080:8080"
     depends_on:
       - source_db
+    networks:
+      - upstream_app_networks
     restart: unless-stopped
 
   upstream-app:
@@ -51,6 +56,8 @@ services:
     restart: on-failure
     depends_on:
       - source_db
+    networks:
+      - upstream_app_networks
     healthcheck:
       test: curl --fail http://localhost:8501/healthz || exit 1
       interval: 30s
@@ -166,12 +173,12 @@ services:
     environment:
       - CONNECT_BOOTSTRAP_SERVERS=${CONNECT_BOOTSTRAP_SERVERS}
       - CONNECT_GROUP_ID=kafka-connectx
-      - CONNECT_CONFIG_STORAGE_TOPIC=_kafka-connectx-config
-      - CONNECT_OFFSET_STORAGE_TOPIC=_kafka-connectx-offsets
-      - CONNECT_STATUS_STORAGE_TOPIC=_kafka-connectx-status
       - CONNECT_REPLICATION_FACTOR=3
+      - CONNECT_CONFIG_STORAGE_TOPIC=_kafka-connectx-config
       - CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR=3
+      - CONNECT_OFFSET_STORAGE_TOPIC=_kafka-connectx-offsets
       - CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR=3
+      - CONNECT_STATUS_STORAGE_TOPIC=_kafka-connectx-status
       - CONNECT_STATUS_STORAGE_REPLICATION_FACTOR=3
       # Converters
       - CONNECT_KEY_CONVERTER=org.apache.kafka.connect.json.JsonConverter
@@ -207,6 +214,8 @@ services:
       - KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL=${KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL}
       - KAFKA_CLUSTERS_0_PROPERTIES_SASL_MECHANISM=${KAFKA_CLUSTERS_0_PROPERTIES_SASL_MECHANISM}
       - KAFKA_CLUSTERS_0_PROPERTIES_SASL_JAAS_CONFIG=${KAFKA_CLUSTERS_0_PROPERTIES_SASL_JAAS_CONFIG}
+      - KAFKA_CLUSTERS_0_KAFKACONNECT_0_NAME=kafka-connect
+      - KAFKA_CLUSTERS_0_KAFKACONNECT_0_ADDRESS=http://kafka-connect:8083
     depends_on:
       - zookeeper
       - kafka-0
@@ -214,5 +223,7 @@ services:
       - kafka_networks
 
 networks:
+  upstream_app_networks:
+    driver: bridge
   kafka_networks:
     driver: bridge
