@@ -1,9 +1,7 @@
-from sqlalchemy import create_engine
+import os, logging
 from contextlib import contextmanager
 
-import os
-import logging
-
+from sqlalchemy import create_engine
 
 # Init logging
 logging.basicConfig(

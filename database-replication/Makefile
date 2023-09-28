@@ -44,7 +44,7 @@ format:
 	python -m black -S --line-length 88 --preview ./app
 
 lint:
-	python -m ruff check --fix ./app
+	python -m ruff check --fix ./app/app
 
 test:
 	python -m pytest --log-cli-level info -p no:warnings -v ./app/tests/
