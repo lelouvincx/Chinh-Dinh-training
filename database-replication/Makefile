@@ -60,3 +60,35 @@ to-psql-default:
 
 to-psql:
 	@docker compose exec -it source_db psql postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+
+# ============ Kafka ============ 
+check-kafka:
+	docker run -it --rm --network database-replication_kafka_networks bitnami/kafka:3.5 \
+		kafka-topics.sh --list --bootstrap-server kafka-server:9092
+
+check-kafka-connect:
+	curl -s -X GET http://localhost:8083 | jq
+
+show-connector-plugins:
+	curl -s -X GET http://localhost:8083/connector-plugins | jq
+
+show-connectors:
+	curl -s -X GET http://localhost:8083/connectors | jq
+
+show-source-db-connector:
+	curl -s -X GET http://localhost:8083/connectors/source-db-connector\?expand\=status\&expand\=info | jq
+
+create-source-db-connector:
+	python connectors/source-db.py -a create | jq
+
+update-source-db-connector:
+	python connectors/source-db.py -a update | jq
+
+delete-source-db-connector:
+	python connectors/source-db.py -a delete | jq
+
+restart-source-db-connector:
+	curl -s -X POST http://localhost:8083/connectors/source-db-connector/restart | jq
+
+list-topics-source-db-connector:
+	curl -s -X GET http://localhost:8083/connectors/source-db-connector/topics | jq

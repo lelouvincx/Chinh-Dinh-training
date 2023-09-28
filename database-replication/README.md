@@ -203,3 +203,6 @@ sudo chown -R 1001:1001 .docker/data/zookeeper
 - [Kafka Cluster with Zookeeper (3 broker - 1 zoo) as containers](https://www.reddit.com/r/apachekafka/comments/tsr9dx/docker_compose_file_for_kafka_and_kafka_connect/)
 - [Bitnami's Kafka image](https://github.com/bitnami/containers/blob/main/bitnami/kafka/README.md)
 - [Kafka Concepts (Viet version)](https://viblo.asia/p/010-apache-kafka-connect-concept-gAm5ymNL5db)
+- [Kafka Connect's REST API](https://docs.confluent.io/platform/current/connect/references/restapi.html)
+- [Mini version of this project](https://medium.com/@parasharprasoon.950/how-to-set-up-cdc-with-kafka-debezium-and-postgres-70a907b8ca20)
+- [PostgreSQL Debezium properties for Kafka Connect](https://debezium.io/documentation/reference/1.1/connectors/postgresql.html#postgresql-connector-properties)
