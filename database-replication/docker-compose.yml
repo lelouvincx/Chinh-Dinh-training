@@ -19,8 +19,8 @@ services:
     restart: unless-stopped
     healthcheck:
       test: pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
-      interval: 1m30s
-      timeout: 30s
+      interval: 30s
+      timeout: 10s
       retries: 5
       start_period: 10s
 
@@ -53,7 +53,7 @@ services:
       - source_db
     healthcheck:
       test: curl --fail http://localhost:8501/healthz || exit 1
-      interval: 1m30s
+      interval: 30s
       timeout: 30s
       retries: 5
       start_period: 10s
@@ -96,9 +96,9 @@ services:
     healthcheck:
       test: kafka-topics.sh --list --bootstrap-server kafka-server:9092 || exit -1
       interval: 5s
-      timeout: 10s
-      retries: 10
-      start_period: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   kafka-1:
     image: bitnami/kafka:3.5
@@ -123,9 +123,9 @@ services:
     healthcheck:
       test: kafka-topics.sh --list --bootstrap-server kafka-1:9092 || exit -1
       interval: 5s
-      timeout: 10s
-      retries: 10
-      start_period: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   kafka-2:
     image: bitnami/kafka:3.5
@@ -150,26 +150,37 @@ services:
     healthcheck:
       test: kafka-topics.sh --list --bootstrap-server kafka-2:9092 || exit -1
       interval: 5s
-      timeout: 10s
-      retries: 10
-      start_period: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   kafka-connect:
-    image: confluentinc/cp-server-connect:7.1.1
+    build:
+      context: .
+      dockerfile: .docker/images/kafka-connect/Dockerfile
     container_name: kafka-connect
     ports:
       - "8083:8083"
+    volumes:
+      - .docker/data/kafka-connect:/data
     environment:
       - CONNECT_BOOTSTRAP_SERVERS=${CONNECT_BOOTSTRAP_SERVERS}
       - CONNECT_GROUP_ID=kafka-connectx
       - CONNECT_CONFIG_STORAGE_TOPIC=_kafka-connectx-config
       - CONNECT_OFFSET_STORAGE_TOPIC=_kafka-connectx-offsets
       - CONNECT_STATUS_STORAGE_TOPIC=_kafka-connectx-status
+      - CONNECT_REPLICATION_FACTOR=3
+      - CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR=3
+      - CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR=3
+      - CONNECT_STATUS_STORAGE_REPLICATION_FACTOR=3
+      # Converters
       - CONNECT_KEY_CONVERTER=org.apache.kafka.connect.json.JsonConverter
       - CONNECT_VALUE_CONVERTER=org.apache.kafka.connect.json.JsonConverter
       - CONNECT_INTERNAL_KEY_CONVERTER=org.apache.kafka.connect.json.JsonConverter
       - CONNECT_INTERNAL_VALUE_CONVERTER=org.apache.kafka.connect.json.JsonConverter
-      - CONNECT_REST_ADVERTISED_HOST_NAME=localhost
+      # Misc
+      - CONNECT_REST_ADVERTISED_HOST_NAME=kafka-connect
+      - CONNECT_LISTENERS=http://kafka-connect:8083
       - CONNECT_PLUGIN_PATH=/usr/share/java,/usr/share/confluent-hub-components
     restart: unless-stopped
     depends_on:
@@ -180,8 +191,8 @@ services:
     healthcheck:
       test: curl http://localhost:8083 || exit -1
       interval: 5s
-      timeout: 10s
-      retries: 10
+      timeout: 5s
+      retries: 5
       start_period: 30s
 
   kafka-ui:
