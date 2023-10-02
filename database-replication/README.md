@@ -213,3 +213,4 @@ sudo chown -R 1001:1001 .docker/log/kafka*
 - [Kafka Connect's REST API](https://docs.confluent.io/platform/current/connect/references/restapi.html)
 - [Mini version of this project](https://medium.com/@parasharprasoon.950/how-to-set-up-cdc-with-kafka-debezium-and-postgres-70a907b8ca20)
 - [PostgreSQL Debezium properties for Kafka Connect](https://debezium.io/documentation/reference/1.1/connectors/postgresql.html#postgresql-connector-properties)
+- [Unsupported features of SQL Server on Linux (container)](https://learn.microsoft.com/en-us/sql/linux/sql-server-linux-editions-and-components-2019?view=sql-server-ver16#Unsupported)
