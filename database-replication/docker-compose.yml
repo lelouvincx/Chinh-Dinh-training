@@ -36,6 +36,8 @@ services:
       - source_db
     networks:
       - upstream_networks
+    networks:
+      - upstream_networks
     restart: unless-stopped
 
   upstream-app:
@@ -49,6 +51,8 @@ services:
     restart: on-failure
     depends_on:
       - source_db
+    networks:
+      - upstream_networks
     networks:
       - upstream_networks
     healthcheck:

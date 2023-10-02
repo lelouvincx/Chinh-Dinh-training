@@ -199,6 +199,7 @@ Details of stock items, their holdings and transactions.
 ```bash
 sudo chown -R 1001:1001 .docker/data/kafka
 sudo chown -R 1001:1001 .docker/data/zookeeper
+sudo chown -R 1001:1001 .docker/log/kafka*
 ```
 
 ## References
