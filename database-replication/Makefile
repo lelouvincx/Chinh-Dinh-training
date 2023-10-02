@@ -30,7 +30,10 @@ sleep:
 
 # ============ Build images ============ 
 build-upstream-app:
-	docker build -t upstream-app:dev -f .docker/images/app/Dockerfile .
+	docker build -t upstream-app:latest -f .docker/images/app/Dockerfile .
+
+build-kafka-connect:
+	docker build -t kafka-connect:latest -f .docker/images/kafka-connect/Dockerfile .
 
 # ============ Testing, formatting, type checks, link checks ============ 
 app-requirements:

@@ -17,6 +17,8 @@
       - [Purchasing schema](#purchasing-schema)
       - [Sales schema](#sales-schema)
       - [Warehouse schema](#warehouse-schema)
+  - [Troubleshoot](#troubleshoot)
+  - [References](#references)
 
 ## Tasks
 
@@ -26,9 +28,13 @@ Visit here: https://github.com/users/lelouvincx/projects/5/
 - [x] Initialize Postgres with dataset
   - [x] Database catalog
 - [x] Build Flask application to fake generate data in realtime
-- [ ] Build Kafka Cluster with 3 nodes
-- [ ] Unittest for `Fake Data Generation` app
-  - [ ] TDD (Test Driven Development)
+- [x] Build Kafka Cluster with 3 nodes
+- [x] Unittest for `Fake Data Generation` app
+  - [x] TDD (Test Driven Development)
+- [ ] Kafka Connect
+  - [x] Debezium CDC Postgres connector
+  - [ ] JDBC Connector (for SQL Server)
+- [ ] CI for Pull Requests
 
 ## Local development guide
 
@@ -193,10 +199,11 @@ Details of stock items, their holdings and transactions.
 
 ## Troubleshoot
 
-- Cannot create directory '/bitnami/...'. You should chown to your docker user's id. [Refer here](https://github.com/bitnami/containers/issues/41422#issuecomment-1674497129)
+- Cannot create directory '/bitnami/...' => The user's id and group id of zookeeper/kafka/kafka-connect is `1001:1000`. You should chown to `1001:1001`. [Refer here.](https://github.com/bitnami/containers/issues/41422#issuecomment-1674497129)
 ```bash
-sudo chown -R 1001:1001 .docker/data/kafka
+sudo chown -R 1001:1001 .docker/data/kafka*
 sudo chown -R 1001:1001 .docker/data/zookeeper
+sudo chown -R 1001:1001 .docker/log/kafka*
 ```
 
 ## References
