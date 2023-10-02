@@ -245,29 +245,6 @@ services:
       retries: 5
       start_period: 10s
 
-  sink_db:
-    image: mcr.microsoft.com/mssql/server:2022-CU8-ubuntu-20.04
-    container_name: sink_db
-    user: root
-    ports:
-      - "1433:1433"
-    environment:
-      - ACCEPT_EULA=Y
-      - MSSQL_PID=Developer
-      - MSSQL_USER=SA
-      - MSSQL_SA_PASSWORD=${MSSQL_SA_PASSWORD}
-    volumes:
-      - .docker/data/mssql:/var/opt/mssql/data
-      - .docker/log/mssql:/var/opt/mssql/log
-      - .docker/backups/mssql:/var/opt/mssql/backup
-    restart: on-failure
-    healthcheck:
-      test: /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "$$MSSQL_SA_PASSWORD" -Q "SELECT 1;" || exit
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 10s
-
 networks:
   upstream_networks:
     driver: bridge
