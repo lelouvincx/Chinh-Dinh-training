@@ -1,9 +1,8 @@
-from sqlalchemy import create_engine
+import os, logging
 from contextlib import contextmanager
 
-import os
-import logging
-
+from sqlalchemy import create_engine
+from psycopg2 import OperationalError
 
 # Init logging
 logging.basicConfig(
@@ -33,5 +32,7 @@ class PsqlConnector:
         db_conn = create_engine(conn_info)
         try:
             yield db_conn
-        except Exception as e:
+        except OperationalError as e:
             logging.exception(f"Error when connecting to Postgres: {e}")
+        finally:
+            db_conn.dispose()

@@ -1,0 +1,6 @@
+psycopg2-binary==2.9.7
+Faker==19.6.0
+streamlit==1.26.0
+confluent-kafka==2.2.0
+sqlalchemy==2.0.20
+python-dotenv==1.0.0

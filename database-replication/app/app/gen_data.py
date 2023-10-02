@@ -1,5 +1,6 @@
 from sqlalchemy import text
 from faker import Faker
+
 try:
     # Try importing for unit testing
     from app.psql_connector import PsqlConnector
@@ -126,9 +127,3 @@ def gen_public_test(connector: PsqlConnector, num_records: int = 1) -> None:
 
                 cursor.execute(text(sql_script))
                 cursor.commit()
-
-
-if __name__ == "__main__":
-    psql_connector = PsqlConnector(psql_params)
-    public_test = Table(schema="public", name="test")
-    result = public_test.update_attributes(psql_connector)

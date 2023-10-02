@@ -30,7 +30,10 @@ sleep:
 
 # ============ Build images ============ 
 build-upstream-app:
-	docker build -t upstream-app:dev -f .docker/images/app/Dockerfile .
+	docker build -t upstream-app:latest -f .docker/images/app/Dockerfile .
+
+build-kafka-connect:
+	docker build -t kafka-connect:latest -f .docker/images/kafka-connect/Dockerfile .
 
 # ============ Testing, formatting, type checks, link checks ============ 
 app-requirements:
@@ -44,7 +47,7 @@ format:
 	python -m black -S --line-length 88 --preview ./app
 
 lint:
-	python -m ruff check --fix ./app
+	python -m ruff check --fix ./app/app
 
 test:
 	python -m pytest --log-cli-level info -p no:warnings -v ./app/tests/
@@ -60,3 +63,35 @@ to-psql-default:
 
 to-psql:
 	@docker compose exec -it source_db psql postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+
+# ============ Kafka ============ 
+check-kafka:
+	docker run -it --rm --network database-replication_kafka_networks bitnami/kafka:3.5 \
+		kafka-topics.sh --list --bootstrap-server kafka-server:9092
+
+check-kafka-connect:
+	curl -s -X GET http://localhost:8083 | jq
+
+show-connector-plugins:
+	curl -s -X GET http://localhost:8083/connector-plugins | jq
+
+show-connectors:
+	curl -s -X GET http://localhost:8083/connectors | jq
+
+show-source-db-connector:
+	curl -s -X GET http://localhost:8083/connectors/source-db-connector\?expand\=status\&expand\=info | jq
+
+create-source-db-connector:
+	python connectors/source-db.py -a create | jq
+
+update-source-db-connector:
+	python connectors/source-db.py -a update | jq
+
+delete-source-db-connector:
+	python connectors/source-db.py -a delete | jq
+
+restart-source-db-connector:
+	curl -s -X POST http://localhost:8083/connectors/source-db-connector/restart | jq
+
+list-topics-source-db-connector:
+	curl -s -X GET http://localhost:8083/connectors/source-db-connector/topics | jq
