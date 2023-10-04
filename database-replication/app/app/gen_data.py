@@ -61,6 +61,9 @@ class Table:
     def get_name(self) -> str:
         return self._name
 
+    def get_attributes(self) -> list:
+        return self._attributes
+
     # Setters
     def set_attributes(self, attributes: list) -> None:
         self._attributes = attributes
@@ -101,8 +104,10 @@ class Table:
                 fetch_result = cursor.execute(text(sql_script)).fetchone() or []
                 # Current type: sqlalchemy.engine.row.Row
                 fetch_result = fetch_result[0] or {}  # Current type: dict
+                logger.info(f"fetch_result: {fetch_result}")
 
                 new_attributes = fetch_result.get(self.get_name()) or []
+                logger.info(f"new_attributes: {new_attributes}")
 
                 if new_attributes == self._attributes:
                     logger.info("There's nothing to change")
