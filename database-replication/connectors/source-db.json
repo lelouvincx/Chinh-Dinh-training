@@ -5,12 +5,14 @@
     "plugin.name": "pgoutput",
     "database.history.kafka.bootstrap.servers": "kafka-server:9092",
     "database.history.kafka.topic": "dbhistory.public",
+    "topic.prefix": "source_db",
     "topic.creation.default.replication.factor": "3",
     "topic.creation.default.partitions": "1",
-    "decimal.handling.mode": "double",
     "include.schema.changes": "true",
-    "schema.blacklist": "application,purchasing,sales,warehouse",
-    "schema.whitelist": "public",
-    "topic.prefix": "source_db"
+    "schema.include.list": "public",
+    "slot.name": "wwi_test_dbz",
+    "slot.drop_on_stop": "true",
+    "transforms": "flatten",
+    "transforms.flatten.type": "org.apache.kafka.connect.transforms.Flatten$Value"
   }
 }

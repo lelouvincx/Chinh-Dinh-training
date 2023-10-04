@@ -1,0 +1,20 @@
+{
+  "name": "sink-db-connector",
+  "config": {
+    "connector.class": "io.confluent.connect.jdbc.JdbcSinkConnector",
+    "connection.url": "jdbc:sqlserver://sink_db;database=wwi_test;username=SA;password=Admin123@;",
+    "tasks.max": 2,
+    "max.poll.records": 4000,
+    "batch.size": 4000,
+    "topics": "source_db.public.test",
+    "auto.create": true,
+    "table.name.format": "wwi_test.${topic}",
+    "insert.mode": "upsert",
+    "pk.fields": "id",
+    "pk.mode": "record_key",
+    "delete.enabled": true,
+    "auto.evolve": true,
+    "consumer.fetch.min.bytes": 1000000,
+    "consumer.fetch.wait.max.ms": 1000
+  }
+}

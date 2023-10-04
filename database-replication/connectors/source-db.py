@@ -71,11 +71,6 @@ def make_request(action: str) -> str:
         try:
             response = requests.delete(url=url, headers=headers)
             response.raise_for_status()
-            formatted_json = json.dumps(json.loads(response.content), indent=4)
-            content = json.loads(response.content)
-            content["status_code"] = response.status_code
-            formatted_json = json.dumps(content, indent=4)
-            return formatted_json
         except requests.exceptions.RequestException as e:
             print(f"DELETE request failed due to: {e}")
 

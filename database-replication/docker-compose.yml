@@ -233,6 +233,9 @@ services:
       - .docker/log/mssql:/var/opt/mssql/log
       - .docker/backups/mssql:/var/opt/mssql/backup
     restart: on-failure
+    networks:
+      - downstream_networks
+      - kafka_networks
     healthcheck:
       test: /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "$$MSSQL_SA_PASSWORD" -Q "SELECT 1;" || exit
       interval: 30s
