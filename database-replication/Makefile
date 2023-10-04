@@ -57,12 +57,15 @@ cov:
 
 ci: db-docs app-requirements format lint
 
-# ============ Postgres ============ 
+# ============ Postgres + MSSQL ============ 
 to-psql-default:
 	@docker compose exec -it source_db psql postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/postgres
 
 to-psql:
 	@docker compose exec -it source_db psql postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+
+to-mssql:
+	@docker compose exec -it sink_db bash -c '/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "${MSSQL_SA_PASSWORD}"'
 
 # ============ Kafka ============ 
 check-kafka:
