@@ -1,6 +1,7 @@
 .docker/data/*
 .docker/backups/*
 .docker/log/*
+tmp/
 restore.log
 database-replication.code-workspace
 htmlcov/
