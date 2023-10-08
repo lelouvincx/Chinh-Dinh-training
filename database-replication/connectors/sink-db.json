@@ -6,15 +6,16 @@
     "tasks.max": 2,
     "max.poll.records": 4000,
     "batch.size": 4000,
-    "topics": "source_db.public.test",
-    "auto.create": true,
-    "table.name.format": "wwi_test.${topic}",
-    "insert.mode": "upsert",
+    "topics": "test",
+    "table.name.format": "wwi_test.dbo.${topic}",
     "pk.fields": "id",
     "pk.mode": "record_key",
+    "insert.mode": "upsert",
     "delete.enabled": true,
-    "auto.evolve": true,
+    "auto.create": true,
     "consumer.fetch.min.bytes": 1000000,
-    "consumer.fetch.wait.max.ms": 1000
+    "consumer.fetch.wait.max.ms": 1000,
+    "transforms": "unwrap",
+    "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState"
   }
 }
