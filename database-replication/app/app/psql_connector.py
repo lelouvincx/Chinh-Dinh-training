@@ -1,4 +1,5 @@
-import os, logging
+import os
+import logging
 from contextlib import contextmanager
 
 from sqlalchemy import create_engine

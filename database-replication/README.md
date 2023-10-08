@@ -92,9 +92,9 @@ Then enter admin's password and take a coffee.
 
 ## Design architecture
 
-**Prequisites:** It uses (Graphviz)[https://www.graphviz.org/] to render the diagram, so you need to (install Graphviz)[https://graphviz.gitlab.io/download/] to use diagrams. After installing graphviz (or already have it), install the diagrams python package.
+**Prequisites:** It uses [Graphviz](https://www.graphviz.org/) to render the diagram, so you need to [install Graphviz](https://graphviz.gitlab.io/download/) to use diagrams. After installing graphviz (or already have it), install the diagrams python package.
 
-For design architecture configurations, visit (diagram.py)[./docs/diagram.py]
+For design architecture configurations, visit [diagram.py](./docs/diagram.py).
 
 ![](./docs/images/design_architecture.png)
 
