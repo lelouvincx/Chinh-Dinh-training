@@ -43,6 +43,11 @@ app-requirements:
 db-docs:
 	dbdocs build docs/wideworldimporters.dbml
 
+diagram:
+	rm docs/images/design_architecture.png && \
+		python docs/diagram.py && \
+		mv design_architecture.png docs/images/
+
 format:
 	python -m black -S --line-length 88 --preview ./app
 
@@ -55,7 +60,7 @@ test:
 cov:
 	python -m pytest --log-cli-level info -p no:warnings --cov -v ./app/tests/
 
-ci: db-docs app-requirements format lint
+ci: db-docs diagram app-requirements format lint
 
 # ============ Postgres ============ 
 to-psql-default:
