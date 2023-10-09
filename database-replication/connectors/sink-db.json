@@ -1,13 +1,11 @@
 {
-  "name": "sink-db-connector",
+  "name": "sink-public-test-v1",
   "config": {
     "connector.class": "io.confluent.connect.jdbc.JdbcSinkConnector",
-    "connection.url": "jdbc:sqlserver://sink_db;database=wwi_test;username=SA;password=Admin123@;",
     "tasks.max": 2,
     "max.poll.records": 4000,
     "batch.size": 4000,
-    "topics": "test",
-    "table.name.format": "wwi_test.dbo.${topic}",
+    "topics": "public.test",
     "pk.fields": "id",
     "pk.mode": "record_key",
     "insert.mode": "upsert",
@@ -15,7 +13,12 @@
     "auto.create": true,
     "consumer.fetch.min.bytes": 1000000,
     "consumer.fetch.wait.max.ms": 1000,
-    "transforms": "unwrap",
-    "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState"
+    "transforms": "unwrap,route",
+    "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
+    "transforms.unwrap.drop.tombstones": true,
+    "transforms.unwrap.delete.handling.mode": "rewrite",
+    "transforms.route.type": "org.apache.kafka.connect.transforms.RegexRouter",
+    "transforms.route.regex": "([^.]+)\\.([^.]+)",
+    "transforms.route.replacement": "$2"
   }
 }

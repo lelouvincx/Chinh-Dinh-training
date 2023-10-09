@@ -1,5 +1,5 @@
 {
-  "name": "source-db-connector-test-4",
+  "name": "source-v2",
   "config": {
     "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
     "plugin.name": "pgoutput",
@@ -10,11 +10,11 @@
     "topic.creation.default.partitions": "1",
     "include.schema.changes": "true",
     "schema.include.list": "public",
-    "slot.name": "wwi_test_dbz",
+    "slot.name": "dbz",
     "slot.drop_on_stop": "true",
     "transforms": "route",
     "transforms.route.type": "org.apache.kafka.connect.transforms.RegexRouter",
     "transforms.route.regex": "([^.]+)\\.([^.]+)\\.([^.]+)",
-    "transforms.route.replacement": "$3"
+    "transforms.route.replacement": "$2.$3"
   }
 }
