@@ -207,6 +207,7 @@ sudo chown -R 1001:1001 .docker/log/kafka*
 ```
 
 ## References
+- [Very first article to read](https://debezium.io/blog/2017/09/25/streaming-to-another-database/)
 - [Kafka Cluster with Zookeeper (3 broker - 1 zoo) as containers](https://www.reddit.com/r/apachekafka/comments/tsr9dx/docker_compose_file_for_kafka_and_kafka_connect/)
 - [Bitnami's Kafka image](https://github.com/bitnami/containers/blob/main/bitnami/kafka/README.md)
 - [Kafka Concepts (Viet version)](https://viblo.asia/p/010-apache-kafka-connect-concept-gAm5ymNL5db)
@@ -214,3 +215,4 @@ sudo chown -R 1001:1001 .docker/log/kafka*
 - [Mini version of this project](https://medium.com/@parasharprasoon.950/how-to-set-up-cdc-with-kafka-debezium-and-postgres-70a907b8ca20)
 - [PostgreSQL Debezium properties for Kafka Connect](https://debezium.io/documentation/reference/1.1/connectors/postgresql.html#postgresql-connector-properties)
 - [Unsupported features of SQL Server on Linux (container)](https://learn.microsoft.com/en-us/sql/linux/sql-server-linux-editions-and-components-2019?view=sql-server-ver16#Unsupported)
+- [Source - Sink configuration sample](https://medium.com/@shiva.prathipati/real-time-database-replication-using-kafka-d9e7a592e476)

@@ -84,17 +84,5 @@ show-connectors:
 show-source-db-connector:
 	curl -s -X GET http://localhost:8083/connectors/source-db-connector\?expand\=status\&expand\=info | jq
 
-create-source-db-connector:
-	python connectors/source-db.py -a create | jq
-
-update-source-db-connector:
-	python connectors/source-db.py -a update | jq
-
-delete-source-db-connector:
-	python connectors/source-db.py -a delete | jq
-
-restart-source-db-connector:
-	curl -s -X POST http://localhost:8083/connectors/source-db-connector/restart | jq
-
 list-topics-source-db-connector:
 	curl -s -X GET http://localhost:8083/connectors/source-db-connector/topics | jq
