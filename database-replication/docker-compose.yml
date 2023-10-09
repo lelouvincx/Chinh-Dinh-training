@@ -186,7 +186,8 @@ services:
       - CONNECT_INTERNAL_KEY_CONVERTER=org.apache.kafka.connect.json.JsonConverter
       - CONNECT_INTERNAL_VALUE_CONVERTER=org.apache.kafka.connect.json.JsonConverter
       # Misc
-      - CONNECT_REST_ADVERTISED_HOST_NAME=kafka-connect
+      - CONNECT_REST_ADVERTISED_HOST_NAME=${CONNECT_REST_ADVERTISED_HOST_NAME}
+      - CONNECT_REST_PORT=8083
       - CONNECT_LISTENERS=http://kafka-connect:8083
       - CONNECT_PLUGIN_PATH=/usr/share/java,/usr/share/confluent-hub-components
     restart: unless-stopped
@@ -195,12 +196,6 @@ services:
       - kafka-0
     networks:
       - kafka_networks
-    healthcheck:
-      test: curl http://localhost:8083 || exit -1
-      interval: 5s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
@@ -238,6 +233,9 @@ services:
       - .docker/log/mssql:/var/opt/mssql/log
       - .docker/backups/mssql:/var/opt/mssql/backup
     restart: on-failure
+    networks:
+      - downstream_networks
+      - kafka_networks
     healthcheck:
       test: /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "$$MSSQL_SA_PASSWORD" -Q "SELECT 1;" || exit
       interval: 30s

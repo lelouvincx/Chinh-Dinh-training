@@ -5,3 +5,4 @@ tmp/
 restore.log
 database-replication.code-workspace
 htmlcov/
+test.db

@@ -62,12 +62,15 @@ cov:
 
 ci: db-docs diagram app-requirements format lint
 
-# ============ Postgres ============ 
+# ============ Postgres + MSSQL ============ 
 to-psql-default:
 	@docker compose exec -it source_db psql postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/postgres
 
 to-psql:
 	@docker compose exec -it source_db psql postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}
+
+to-mssql:
+	@docker compose exec -it sink_db bash -c '/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "${MSSQL_SA_PASSWORD}"'
 
 # ============ Kafka ============ 
 check-kafka:
@@ -85,18 +88,6 @@ show-connectors:
 
 show-source-db-connector:
 	curl -s -X GET http://localhost:8083/connectors/source-db-connector\?expand\=status\&expand\=info | jq
-
-create-source-db-connector:
-	python connectors/source-db.py -a create | jq
-
-update-source-db-connector:
-	python connectors/source-db.py -a update | jq
-
-delete-source-db-connector:
-	python connectors/source-db.py -a delete | jq
-
-restart-source-db-connector:
-	curl -s -X POST http://localhost:8083/connectors/source-db-connector/restart | jq
 
 list-topics-source-db-connector:
 	curl -s -X GET http://localhost:8083/connectors/source-db-connector/topics | jq

@@ -35,16 +35,15 @@ def get_config(filename: str) -> dict:
         logging.error("No config found. Please enter it in the config file.")
         raise Exception
 
-    if config.get("io.debezium.connector.postgresql.PostgresConnector"):
+    if config.get("io.confluent.connect.jdbc.JdbcSinkConnector"):
         logging.warn(
-            "The connector is not from io.debezium.connector.postgresql.PostgresConnector, some functionalities may not work"
+            "The connector is not from io.confluent.connect.jdbc.JdbcSinkConnector, some functionalities may not work"
         )
 
-    config["database.hostname"] = "source_db"
-    config["database.port"] = env["POSTGRES_PORT"] or "5432"
-    config["database.user"] = env["POSTGRES_USER"]
-    config["database.password"] = env["POSTGRES_PASSWORD"]
-    config["database.dbname"] = env["POSTGRES_DB"]
+    config["connection.url"] = f"jdbc:sqlserver://sink_db;database={env['MSSQL_DB']};"
+    config["connection.user"] = "SA"
+    config["connection.password"] = env["MSSQL_SA_PASSWORD"]
+    config["table.name.format"] = f"{env['MSSQL_DB']}" + ".dbo.${topic}"
 
     return config
 
@@ -98,7 +97,7 @@ def make_request(action: str, filename: str) -> str:
             logging.info("Request was successful")
             content = json.loads(response.content)
             content["config"][
-                "database.password"
+                "connection.password"
             ] = "********"  # WARN: Do not comment this line due to password security
             content["status_code"] = response.status_code
             formatted_json = json.dumps(content, indent=4)
@@ -128,7 +127,7 @@ def make_request(action: str, filename: str) -> str:
             logging.info("Request was successful")
             content = json.loads(response.content)
             content["config"][
-                "database.password"
+                "connection.password"
             ] = "********"  # WARN: Do not comment this line due to password security
             content["status_code"] = response.status_code
             formatted_json = json.dumps(content, indent=4)
@@ -182,7 +181,7 @@ if __name__ == "__main__":
         "--config",
         type=str,
         required=True,
-        help="Provide path to config file. Example: connectors/source-db.json",
+        help="Provide path to config file. Example: connectors/sink-db.json",
     )
     args = parser.parse_args()
 
