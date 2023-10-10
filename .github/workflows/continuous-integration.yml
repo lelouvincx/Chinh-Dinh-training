@@ -9,7 +9,7 @@ env:
   KAFKA_CONNECT_IMAGE_NAME: kafka-connect
 
 jobs:
-  Explore github actions:
+  Explore-github-actions:
     runs-on: ubuntu-latest
     steps:
       - run: echo "The job was automatically triggered by a ${{ github.event_name }} event."
@@ -31,7 +31,7 @@ jobs:
 
       - run: echo "This job's status is ${{ job.status }}."
 
-  Build and Push image to ghcr.io registry:
+  Build-and-push-image-to-container-registry:
     runs-on: ubuntu-latest
 
     permissions:
