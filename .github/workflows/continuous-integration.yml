@@ -147,6 +147,10 @@ jobs:
       (needs.build-push-upstream-app.result == 'success' || needs.build-push-upstream-app.result == 'skipped')
     runs-on: ubuntu-22.04
 
+    permissions:
+      contents: read
+      packages: read
+
     env:
       POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
