@@ -1,12 +1,15 @@
 name: Testing Continuous Integration
 run-name: ${{ github.actor }} is testing Github Actions
 
+
 on: [push]
+
 
 env:
   REGISTRY: ghcr.io
   UPSTREAM_APP_IMAGE_NAME: upstream-app
   KAFKA_CONNECT_IMAGE_NAME: kafka-connect
+
 
 jobs:
   explore-github-actions:
@@ -25,6 +28,9 @@ jobs:
 
       - run: echo "The workflow is now ready to test your code on the runner."
 
+      - name: View environment variables
+        run: printenv
+
       - name: List files in the repository
         run: |
           ls -lah ${{ github.workspace }}
@@ -33,9 +39,11 @@ jobs:
 
   check-changes:
     runs-on: ubuntu-22.04
+
     outputs:
       upstream-app: ${{ steps.changes.outputs.upstream-app }}
       kafka-connect: ${{ steps.changes.outputs.kafka-connect }}
+
     steps:
       - name: Checkout repository code
         uses: actions/checkout@v4
