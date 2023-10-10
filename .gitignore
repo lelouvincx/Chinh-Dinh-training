@@ -172,6 +172,9 @@ cython_debug/
 # Misc
 tmp/
 learning/
+learn-kafka/
+learn-sqlserver/
+database-replication/
 
 database-replication.code-workspace
 restore.sql

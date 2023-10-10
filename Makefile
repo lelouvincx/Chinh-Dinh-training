@@ -37,14 +37,14 @@ build-kafka-connect:
 
 # ============ Testing, formatting, type checks, link checks ============ 
 app-requirements:
-	rm app/requirements.txt && \
+	if [ -e "app/requirements.txt" ]; then rm app/requirements.txt; fi && \
 		pip freeze > app/requirements.txt
 
 db-docs:
 	dbdocs build docs/wideworldimporters.dbml
 
 diagram:
-	rm docs/images/design_architecture.png && \
+	if [ -e "docs/images/design_architecture.png" ]; then rm docs/images/design_architecture.png; fi && \
 		python docs/diagram.py && \
 		mv design_architecture.png docs/images/
 
