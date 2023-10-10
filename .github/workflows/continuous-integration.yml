@@ -179,4 +179,4 @@ jobs:
           file: app/tests/docker-compose.yml
           service: upstream-app
           entrypoint: /bin/bash
-          command: /usr/local/bin/python -m pytest --log-cli-level info -p no:warnings -v /app/tests
+          command: python -m pytest --log-cli-level info -p no:warnings -v /app/tests
