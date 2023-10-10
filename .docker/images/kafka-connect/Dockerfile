@@ -9,4 +9,5 @@ RUN confluent-hub install --no-prompt debezium/debezium-connector-postgresql:2.2
 RUN confluent-hub install --no-prompt confluentinc/kafka-connect-jdbc:10.7.4
 
 RUN echo "INFO: Launching Kafka Connect workers"
+
 CMD [ "/etc/confluent/docker/run" ]
