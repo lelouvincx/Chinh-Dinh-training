@@ -1,4 +1,0 @@
-.venv/*
-logs
-test.sink.txt
-.docker/
