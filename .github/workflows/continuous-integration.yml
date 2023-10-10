@@ -176,8 +176,7 @@ jobs:
           login: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: ${{ env.REGISTRY }}
-          workdir: ${GITHUB_WORKSPACE}
           file: app/tests/docker-compose.yml
           service: upstream-app
           entrypoint: /bin/bash
-          command: which python && ls -lah ./app/tests
+          command: which python && ls -lah ${GITHUB_WORKSPACE}/app/tests
