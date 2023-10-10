@@ -148,7 +148,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     env:
-      POSTGRES_USER: ${{ vars.POSTGRES_USER }}
+      POSTGRES_USER: ${{ vars.development.POSTGRES_USER }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       POSTGRES_DB: ${{ vars.POSTGRES_DB }}
       POSTGRES_PORT: ${{ vars.POSTGRES_PORT }}
@@ -162,8 +162,8 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ github.actor }}/${{ env.UPSTREAM_APP_IMAGE_NAME }}
 
-      - name: Export image's tag
-        run: export TAG=${{ steps.meta.outputs.tags }}
+      - name: Export image
+        run: export IMAGE_UPSTREAM_APP=${{ steps.meta.outputs.tags }}
 
       - name: View environment variables
         run: printenv
