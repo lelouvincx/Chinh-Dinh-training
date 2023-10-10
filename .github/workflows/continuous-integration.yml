@@ -43,6 +43,8 @@ jobs:
         uses: dorny/paths-filter@v2
         id: changes
         with:
+          base: ${{ github.ref }}
+          ref: ${{ github.ref }}
           filters: |
             img:
               - ".docker/images/app/**"
