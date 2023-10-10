@@ -166,7 +166,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ github.actor }}/${{ env.UPSTREAM_APP_IMAGE_NAME }}
 
       - name: Unit test
-        uses: cloudposse/github-action-docker-compose-test-run@v0.1.3
+        uses: cloudposse/github-action-docker-compose-test-run@main
         with:
           file: app/tests/docker-compose.yml
           service: upstream-app
