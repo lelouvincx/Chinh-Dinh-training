@@ -9,8 +9,8 @@ env:
   KAFKA_CONNECT_IMAGE_NAME: kafka-connect
 
 jobs:
-  Explore-github-actions:
-    runs-on: ubuntu-latest
+  explore-github-actions:
+    runs-on: ubuntu-22.04
     steps:
       - run: echo "The job was automatically triggered by a ${{ github.event_name }} event."
 
@@ -31,8 +31,25 @@ jobs:
 
       - run: echo "This job's status is ${{ job.status }}."
 
-  Build-and-push-image-to-container-registry:
-    runs-on: ubuntu-latest
+  check-changes-upstream-app:
+    runs-on: ubuntu-22.04
+    outputs:
+      img: ${{ steps.changes.outputs.img }}
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+
+      - name: Check changes
+        id: changes
+        with:
+          filters: |
+            img:
+              - ".docker/images/app/**"
+
+  build-push-upstream-app:
+    needs: check-changes-upstream-app
+    if: ${{ needs.check-changes-upstream-app.outputs.img == 'true' }}
+    runs-on: ubuntu-22.04
 
     permissions:
       contents: read
@@ -41,6 +58,9 @@ jobs:
     steps:
       - name: Checkout repository code
         uses: actions/checkout@v4
+
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v3
 
       - name: Login to the container registry
         uses: docker/login-action@v3
