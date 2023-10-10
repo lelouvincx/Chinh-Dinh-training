@@ -31,10 +31,11 @@ jobs:
 
       - run: echo "This job's status is ${{ job.status }}."
 
-  check-changes-upstream-app:
+  check-changes:
     runs-on: ubuntu-22.04
     outputs:
-      img: ${{ steps.changes.outputs.img }}
+      upstream-app: ${{ steps.changes.outputs.upstream-app }}
+      kafka-connect: ${{ steps.changes.outputs.kafka-connect }}
     steps:
       - name: Checkout repository code
         uses: actions/checkout@v4
@@ -46,12 +47,14 @@ jobs:
           base: ${{ github.ref }}
           ref: ${{ github.ref }}
           filters: |
-            img:
+            upstream-app:
               - ".docker/images/app/**"
+            kafka-connect:
+              - ".docker/images/kafka-connect/**"
 
   build-push-upstream-app:
-    needs: check-changes-upstream-app
-    if: ${{ needs.check-changes-upstream-app.outputs.img == 'true' }}
+    needs: check-changes
+    if: ${{ needs.check-changes.outputs.upstream-app == 'true' }}
     runs-on: ubuntu-22.04
 
     permissions:
@@ -86,5 +89,3 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-
-      - run: echo "This job's status is ${{ job.status }}."
