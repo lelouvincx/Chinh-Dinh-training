@@ -3,8 +3,13 @@ run-name: ${{ github.actor }} is testing Github Actions
 
 on: [push]
 
+env:
+  REGISTRY: ghcr.io
+  UPSTREAM_APP_IMAGE_NAME: upstream-app
+  KAFKA_CONNECT_IMAGE_NAME: kafka-connect
+
 jobs:
-  Explore-Github-Actions:
+  Explore github actions:
     runs-on: ubuntu-latest
     steps:
       - run: echo "The job was automatically triggered by a ${{ github.event_name }} event."
@@ -22,6 +27,40 @@ jobs:
 
       - name: List files in the repository
         run: |
-          ls ${{ github.workspace }}
+          ls -lah ${{ github.workspace }}
+
+      - run: echo "This job's status is ${{ job.status }}."
+
+  Build and Push image to ghcr.io registry:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+
+      - name: Login to the container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.actor }}/${{ env.UPSTREAM_APP_IMAGE_NAME }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
 
       - run: echo "This job's status is ${{ job.status }}."
