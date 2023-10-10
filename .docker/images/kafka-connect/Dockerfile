@@ -1,7 +1,7 @@
 FROM confluentinc/cp-server-connect:7.1.1
 
 # Label for github packages
-LABEL org.opencontainers.image.source https://github.com/lelouvincx/Chinh-Dinh-training
+LABEL org.opencontainers.image.source=https://github.com/lelouvincx/Chinh-Dinh-training
 
 # Install debezium-connector-postgresql and kafka-connect-jdbc
 RUN echo "INFO: Installing Connectors"
