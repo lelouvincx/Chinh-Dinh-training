@@ -40,6 +40,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Check changes
+        uses: dorny/paths-filter@v2
         id: changes
         with:
           filters: |
