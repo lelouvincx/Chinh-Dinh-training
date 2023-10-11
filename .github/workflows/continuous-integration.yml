@@ -189,7 +189,7 @@ jobs:
         run: docker-compose -f app/tests/docker-compose.yml ps -a
 
       - name: Unit tests
-        run: docker-compose --log-level DEBUG -f app/tests/docker-compose.yml exec upstream-app python -m pytest --log-cli-level info -p no:warnings -v /app/tests
+        run: docker-compose --log-level DEBUG -f app/tests/docker-compose.yml exec -it upstream-app python -m pytest --log-cli-level info -p no:warnings -v /app/tests
 
       - name: Compose down services
         run: docker-compose version && docker-compose -f app/tests/docker-compose.yml up -d
