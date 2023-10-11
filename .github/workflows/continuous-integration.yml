@@ -145,13 +145,11 @@ jobs:
       (needs.build-push-upstream-app.result == 'success' || needs.build-push-upstream-app.result == 'skipped')
     runs-on: ubuntu-22.04
 
-    permissions: read-all
-
     env:
-      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-      POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: wideworldimporters
+      POSTGRES_PORT: 5432
       REGISTRY: ghcr.io
       UPSTREAM_APP_IMAGE_NAME: upstream-app
 
@@ -192,8 +190,8 @@ jobs:
       - name: View environments of upstream-app
         run: docker-compose -f app/tests/docker-compose.yml exec upstream-app printenv
 
-      # - name: Unit tests
-      #   run: docker-compose -f app/tests/docker-compose.yml exec upstream-app python -m pytest -v /app/tests
+      - name: Unit tests
+        run: docker-compose -f app/tests/docker-compose.yml exec upstream-app python -m pytest -v /app/tests
 
       - name: Compose down services
         run: docker-compose version && docker-compose -f app/tests/docker-compose.yml down
