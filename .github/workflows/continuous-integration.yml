@@ -182,6 +182,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: View current working dir
+        run: pwd && ls -lah
+
       - name: Compose up services
         run: docker-compose version && docker-compose -f app/tests/docker-compose.yml up -d
 
@@ -189,7 +192,7 @@ jobs:
         run: docker-compose -f app/tests/docker-compose.yml ps -a
 
       - name: Unit tests
-        run: docker-compose --log-level DEBUG -f app/tests/docker-compose.yml exec -it upstream-app python -m pytest -v /app/tests
+        run: docker-compose -f app/tests/docker-compose.yml exec upstream-app python -m pytest -v /app/tests
 
       - name: Compose down services
-        run: docker-compose version && docker-compose -f app/tests/docker-compose.yml up -d
+        run: docker-compose version && docker-compose -f app/tests/docker-compose.yml down
