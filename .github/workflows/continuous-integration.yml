@@ -170,13 +170,13 @@ jobs:
       - name: View the environment variables
         run: printenv
 
-      - name: Unit test
-        uses: cloudposse/github-action-docker-compose-test-run@main
-        with:
-          login: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          registry: ${{ env.REGISTRY }}
-          file: app/tests/docker-compose.yml
-          service: upstream-app
-          entrypoint: /bin/bash
-          command: which python && docker-compose -f app/tests/docker-compose.yml exec -T upstream-app python -m pip show pytest
+      - name: Setup docker-compose
+        uses: KengoTODA/actions-setup-docker-compose@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compose up services
+        run: docker-compose version && docker-compose -f app/tests/docker-compose.yml up -d
+
+      - name: View running services
+        run: docker-compose -f app/test/docker-compose.yml ps -a
