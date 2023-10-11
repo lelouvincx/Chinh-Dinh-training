@@ -51,7 +51,6 @@ jobs:
           filters: |
             upstream-app:
               - ".docker/images/app/**"
-              - "app/**"
             kafka-connect:
               - ".docker/images/kafka-connect/**"
 
@@ -180,16 +179,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: View current working dir
-        run: pwd && ls -lah && printenv
+        run: pwd && ls -a && ls -lah app
 
       - name: Compose up services
         run: docker-compose version && docker-compose -f app/tests/docker-compose.yml up -d
 
       - name: View running services
         run: docker-compose -f app/tests/docker-compose.yml ps -a && sleep 15
-
-      - name: View environments of upstream-app
-        run: docker-compose -f app/tests/docker-compose.yml exec upstream-app printenv
 
       - name: Unit tests
         run: docker-compose -f app/tests/docker-compose.yml exec upstream-app python -m pytest --log-cli-level info -p no:warnings -v /app/tests

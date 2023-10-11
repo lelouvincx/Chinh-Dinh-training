@@ -20,6 +20,8 @@ services:
     container_name: "upstream-app"
     ports:
       - "8501:8501"
+    volumes:
+      - app:/app
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
