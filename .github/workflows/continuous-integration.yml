@@ -189,4 +189,4 @@ jobs:
         run: cd ${GITHUB_WORKSPACE} && docker-compose version && docker-compose -f app/tests/docker-compose.yml up -d
 
       - name: View running services
-        run: cd ${GITHUB_WORKSPACE} && docker-compose -f app/test/docker-compose.yml ps -a
+        run: cd ${GITHUB_WORKSPACE} && docker-compose -f app/tests/docker-compose.yml ps -a
