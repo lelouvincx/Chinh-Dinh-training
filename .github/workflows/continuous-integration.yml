@@ -179,4 +179,4 @@ jobs:
           file: app/tests/docker-compose.yml
           service: upstream-app
           entrypoint: /bin/bash
-          command: echo 1 && docker-compose ps -a
+          command: cat /etc/os-release && docker-compose ps -a
