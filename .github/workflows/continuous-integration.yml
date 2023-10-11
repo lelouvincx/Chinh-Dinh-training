@@ -177,16 +177,19 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ github.actor }}/${{ env.UPSTREAM_APP_IMAGE_NAME }}
 
-      - name: View the environment variables
-        run: printenv
-
       - name: Setup docker-compose
         uses: KengoTODA/actions-setup-docker-compose@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Compose up services
-        run: cd ${GITHUB_WORKSPACE} && docker-compose version && docker-compose -f app/tests/docker-compose.yml up -d
+        run: docker-compose version && docker-compose -f app/tests/docker-compose.yml up -d
 
       - name: View running services
-        run: cd ${GITHUB_WORKSPACE} && docker-compose -f app/tests/docker-compose.yml ps -a
+        run: docker-compose -f app/tests/docker-compose.yml ps -a
+
+      - name: Unit tests
+        run: docker-compose -f app/tests/docker-compose.yml exec -T upstream-app python -m pytest --log-cli-level info -p no:warnings -v /app/tests
+
+      - name: Compose down services
+        run: docker-compose version && docker-compose -f app/tests/docker-compose.yml up -d
