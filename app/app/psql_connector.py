@@ -6,11 +6,15 @@ from sqlalchemy import create_engine
 from psycopg2 import OperationalError
 
 # Init logging
+log_dir = os.path.dirname(__file__) + "/logs"
+if not os.path.exists(log_dir):
+    os.mkdir(log_dir)
+
 logging.basicConfig(
     level=logging.INFO,
     format="[ %(name)s - %(asctime)s %(levelname)s ] %(message)s",
     handlers=[
-        logging.FileHandler(os.path.dirname(__file__) + f"/logs/{__name__}.log"),
+        logging.FileHandler(log_dir + f"/{__name__}.log"),
         logging.StreamHandler(),
     ],
 )

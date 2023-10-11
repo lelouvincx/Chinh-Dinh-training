@@ -18,7 +18,11 @@ from dotenv import load_dotenv
 logger = logging.getLogger(__name__)
 
 # File handler
-f_handler = logging.FileHandler(os.path.dirname(__file__) + f"/logs/{__name__}.log")
+log_dir = os.path.dirname(__file__) + "/logs"
+if not os.path.exists(log_dir):
+    os.mkdir(log_dir)
+
+f_handler = logging.FileHandler(log_dir + f"/{__name__}.log")
 f_handler.setLevel(logging.INFO)
 f_format = logging.Formatter("[ %(asctime)s - %(levelname)s - %(name)s ] %(message)s")
 f_handler.setFormatter(f_format)
