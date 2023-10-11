@@ -1,4 +1,5 @@
-from app.gen_data import Table, PsqlConnector
+from app.psql_connector import PsqlConnector
+from app.gen_data import Table
 from conftest import psql_params
 from sqlalchemy import text
 import pytest
@@ -14,7 +15,7 @@ class TestTable:
             with engine.connect() as cursor:
                 is_connected = True
                 cursor.commit()
-        assert is_connected is True, "Not connected to database"
+        assert is_connected is True, "Not connected to database."
 
     @pytest.mark.dependency(depends=["TEST_CONNECTING"])
     def test_update_attributes(self):

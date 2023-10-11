@@ -51,6 +51,7 @@ jobs:
           filters: |
             upstream-app:
               - ".docker/images/app/**"
+              - "app/**"
             kafka-connect:
               - ".docker/images/kafka-connect/**"
 
