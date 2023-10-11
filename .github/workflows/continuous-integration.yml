@@ -179,4 +179,4 @@ jobs:
           file: app/tests/docker-compose.yml
           service: upstream-app
           entrypoint: /bin/bash
-          command: which python && docker-compose -f app/tests/docker-compose.yml ps -a
+          command: which python && docker-compose -f app/tests/docker-compose.yml exec upstream-app python -m pip show pytest
