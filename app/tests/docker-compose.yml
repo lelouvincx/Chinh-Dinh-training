@@ -16,7 +16,7 @@ services:
     restart: unless-stopped
 
   upstream-app:
-    image: ${DOCKER_METADATA_OUTPUT_TAGS}
+    image: ghcr.io/lelouvincx/upstream-app:${DOCKER_METADATA_OUTPUT_VERSION}
     container_name: "upstream-app"
     ports:
       - "8501:8501"

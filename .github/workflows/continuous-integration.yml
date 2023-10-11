@@ -186,13 +186,13 @@ jobs:
         run: docker-compose version && docker-compose -f app/tests/docker-compose.yml up -d
 
       - name: View running services
-        run: docker-compose -f app/tests/docker-compose.yml ps -a
+        run: docker-compose -f app/tests/docker-compose.yml ps -a && sleep 15
 
       - name: View environments of upstream-app
         run: docker-compose -f app/tests/docker-compose.yml exec upstream-app printenv
 
       - name: Unit tests
-        run: docker-compose -f app/tests/docker-compose.yml exec upstream-app python -m pytest -v /app/tests
+        run: docker-compose -f app/tests/docker-compose.yml exec upstream-app python -m pytest --log-cli-level info -p no:warnings -v /app/tests
 
       - name: Compose down services
         run: docker-compose version && docker-compose -f app/tests/docker-compose.yml down
