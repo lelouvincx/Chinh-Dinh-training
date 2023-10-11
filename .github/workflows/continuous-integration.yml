@@ -186,6 +186,11 @@ jobs:
         run: pwd && ls -lah && printenv
 
       - name: Compose up services
+        env:
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
         run: docker-compose version && docker-compose -f app/tests/docker-compose.yml up -d
 
       - name: View running services
