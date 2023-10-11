@@ -183,7 +183,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: View current working dir
-        run: pwd && ls -lah
+        run: pwd && ls -lah && printenv
 
       - name: Compose up services
         run: docker-compose version && docker-compose -f app/tests/docker-compose.yml up -d
