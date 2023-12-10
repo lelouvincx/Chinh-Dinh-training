@@ -1,5 +1,7 @@
 # Project: Database Replication
 
+[![Testing Continuous Integration](https://github.com/lelouvincx/Chinh-Dinh-training/actions/workflows/continuous-integration.yml/badge.svg)](https://github.com/lelouvincx/Chinh-Dinh-training/actions/workflows/continuous-integration.yml)
+
 - [Project: Database Replication](#project-database-replication)
   - [Tasks](#tasks)
   - [Local development guide](#local-development-guide)

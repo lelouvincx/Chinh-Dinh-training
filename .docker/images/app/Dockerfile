@@ -1,7 +1,8 @@
 FROM python:3.11-slim
 
 # Label for github packages
-LABEL org.opencontainers.image.source https://github.com/lelouvincx/Chinh-Dinh-training
+LABEL org.opencontainers.image.source=https://github.com/lelouvincx/Chinh-Dinh-training
+LABEL org.opencontainers.image.description="Data generator (called upstream-app), generates data to source_db."
 
 WORKDIR /app
 
