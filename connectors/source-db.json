@@ -1,5 +1,5 @@
 {
-  "name": "source-v2",
+  "name": "source-public-test-v1",
   "config": {
     "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
     "plugin.name": "pgoutput",
@@ -10,7 +10,8 @@
     "topic.creation.default.partitions": "1",
     "include.schema.changes": "true",
     "schema.include.list": "public",
-    "slot.name": "dbz",
+    "table.include.list": "public.test",
+    "slot.name": "dbz_public_test",
     "slot.drop_on_stop": "true",
     "transforms": "route",
     "transforms.route.type": "org.apache.kafka.connect.transforms.RegexRouter",
