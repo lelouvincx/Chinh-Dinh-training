@@ -1,4 +1,4 @@
-name: Testing Continuous Integration
+name: General Continuous Integration
 run-name: ${{ github.actor }} is testing Github Actions
 
 

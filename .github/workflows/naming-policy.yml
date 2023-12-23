@@ -1,0 +1,15 @@
+name: Check naming policy
+run-name: Check naming policy for ${{ github.ref }}
+
+on: [create, pull_request]
+
+jobs:
+  branch-naming-rules:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: deepakputhraya/action-branch-name@master
+        with:
+          regex: '([a-z])+\/(\d+)-([a-z])+' # Regex the branch should match. This example enforces grouping
+          allowed_prefixes: 'feat,fix,refactor,docs' # All branches should start with the given prefix
+          ignore: main,dev # Ignore exactly matching branch names from convention
+          max_length: 100 # Max length of the branch name
