@@ -1,7 +1,7 @@
 name: Check naming policy
 run-name: Check naming policy for ${{ github.ref }}
 
-on: [create, pull_request]
+on: [pull_request]
 
 jobs:
   branch-naming-rules:
