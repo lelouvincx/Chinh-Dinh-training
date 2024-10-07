@@ -1,0 +1,567 @@
+Project WideWorldImporters {
+  database_type: 'PostgreSQL'
+  Note: '''
+# WideWorldImporters database catalog
+
+## Schema
+
+**WideWorldImporters uses schemas for different purposes, such as storing data, defining how users can access the data, and providing objects for data warehouse development and integration.**
+
+### Data schemas
+
+These schemas contain the data. Many tables are needed by all other schemas and are located in the Application schema.
+
+| Schema | Description | Status
+| --- | ----------- | ---
+| Application | Application-wide users, contacts, and parameters. This schema also contains reference tables with data that is used by multiple schemas | In use
+| Purchasing | Stock item purchases from suppliers and details about suppliers. | In use
+| Sales | Stock item sales to retail customers, and details about customers and sales people. | In use
+| Warehouse | Stock item inventory and transactions. | In use
+| Public | Public schema to hold dump tables | In use
+| Website | All access to the database from the company website is through this schema. | Idle
+| Reports | All access to the database from Reporting Services reports is through this schema. | Idle
+| PowerBI | All access to the database from the Power BI dashboards via the Enterprise Gateway is through this schema. | Idle
+| Integration | Objects and procedures required for data warehouse integration (that is, migrating the data to the WideWorldImportersDW database). | Idle
+| Sequences | Holds sequences used by all tables in the application. | Idle
+
+  '''
+}
+
+TABLE Application.cities {
+    city_id integer [primary key]
+    city_name varchar
+    state_province_id integer
+    latest_recorded_population bigint
+    last_edited_by integer
+    note: "There are many addresses stored in the system, for people, customer organization delivery addresses, pickup addresses at suppliers, etc. Whenever an address is stored, there is a reference to a city in this table. There is also a spatial location for each city."
+}
+
+TABLE Application.countries {
+    country_id integer [primary key]
+    country_name varchar
+    formal_name varchar
+    iso_alpha_3_code varchar
+    iso_numeric_code integer
+    country_type varchar
+    latest_recorded_population bigint
+    continent varchar
+    region varchar
+    subregion varchar
+    last_edited_by integer
+    note: "States or Provinces are part of countries/regions. This table has details of those, including spatial data describing the boundaries of each country/region."
+}
+
+TABLE Application.delivery_methods {
+    delivery_method_id integer [primary key]
+    delivery_method_name varchar(100)
+    last_edited_by integer
+    note: "Choices for delivering stock items (for example, truck/van, post, pickup, courier, etc.)"
+}
+
+TABLE Application.payment_methods {
+    payment_method_id integer [primary key]
+    payment_method_name varchar(100)
+    last_edited_by integer
+    note: "Choices for making payments (for example, cash, check, EFT, etc.)"
+}
+
+TABLE Application.people {
+    person_id integer [primary key]
+    full_name varchar(100)
+    preferred_name varchar(100)
+    search_name varchar(202)
+    is_permitted_to_logon boolean
+    logon_name varchar(100)
+    is_external_logon_provider boolean
+    hashed_password bytea
+    is_system_user boolean
+    is_employee boolean
+    is_salesperson boolean
+    user_preferences text
+    phone_number varchar(40)
+    fax_number varchar(40)
+    email_address varchar(512)
+    photo bytea
+    custom_fields text
+    other_languages text
+    last_edited_by integer
+    note: "Contains user names, contact information, for all who use the application, and for the people that the Wide World Importers deals with at customer organizations. This table includes staff, customers, suppliers, and any other contacts. For people who have been granted permission to use the system or website, the information includes login details."
+}
+
+TABLE Application.state_provinces {
+    state_province_id integer [primary key]
+    state_province_code varchar(10)
+    state_province_name varchar(100)
+    country_id integer
+    sales_territory varchar(100)
+    latest_recorded_population bigint
+    last_edited_by integer
+    note: "Cities are part of states or provinces. This table has details of those, including spatial data describing the boundaries each state or province."
+}
+
+TABLE Application.system_parameters {
+    system_parameter_id integer [primary key]
+    delivery_address_line_1 varchar(120)
+    delivery_address_line_2 varchar(120)
+    delivery_city_id integer
+    delivery_postal_code varchar(20)
+    postal_address_line_1 varchar(120)
+    postal_address_line_2 varchar(120)
+    postal_city_id integer
+    postal_postal_code varchar(20)
+    application_settings text
+    last_edited_by integer
+    last_edited_when timestamp
+    note: "Contains system-wide configurable parameters."
+}
+
+TABLE Application.transaction_types {
+    transaction_type_id integer [primary key]
+    transaction_type_name varchar(100)
+    last_edited_by integer
+    note: "Types of customer, supplier, or stock transactions (for example, invoice, credit note, etc.)"
+}
+
+TABLE Purchasing.purchase_order_lines {
+    purchase_order_line_id integer [primary key]
+    purchase_order_id integer
+    stock_item_id integer
+    ordered_outers integer
+    description varchar(200)
+    received_outers integer
+    package_type_id integer
+    expected_unit_price_per_outer numeric(18,2)
+    last_receipt_date date
+    is_order_line_finalized boolean
+    last_edited_by integer
+    last_edited_when timestamp
+    note: "Detail lines from supplier purchase orders"
+}
+
+TABLE Purchasing.purchase_orders {
+    purchase_order_id integer [primary key]
+    supplier_id integer
+    order_date date
+    delivery_method_id integer
+    contact_person_id integer
+    expected_delivery_date date
+    supplier_reference varchar(40)
+    is_order_finalized boolean
+    comments text
+    internal_comments text
+    last_edited_by integer
+    last_edited_when timestamp
+    note: "Details of supplier purchase orders"
+}
+
+TABLE Purchasing.supplier_categories {
+    supplier_category_id integer [primary key]
+    supplier_category_name varchar(100)
+    last_edited_by integer
+    note: "Categories for suppliers (for example, novelties, toys, clothing, packaging, etc.)"
+}
+
+TABLE Purchasing.supplier_transactions {
+    supplier_transaction_id integer [primary key]
+    supplier_id integer
+    transaction_type_id integer
+    purchase_order_id integer
+    payment_method_id integer
+    supplier_invoice_number varchar(40)
+    transaction_date date
+    amount_excluding_tax numeric(18,2)
+    tax_amount numeric(18,2)
+    transaction_amount numeric(18,2)
+    outstanding_balance numeric(18,2)
+    finalization_date date
+    is_finalized boolean
+    last_edited_by integer
+    last_edited_when timestamp
+    note: "All financial transactions that are supplier-related (invoices, payments)"
+}
+
+TABLE Purchasing.suppliers {
+    supplier_id integer [primary key]
+    supplier_name varchar(200)
+    supplier_category_id integer
+    primary_contact_person_id integer
+    alternate_contact_person_id integer
+    delivery_method_id integer
+    delivery_city_id integer
+    postal_city_id integer
+    supplier_reference varchar(40)
+    bank_account_name varchar(100)
+    bank_account_branch varchar(100)
+    bank_account_code varchar(40)
+    bank_account_number varchar(40)
+    bank_international_code varchar(40)
+    payment_days integer
+    internal_comments text
+    phone_number varchar(40)
+    fax_number varchar(40)
+    website_url varchar(512)
+    delivery_address_line_1 varchar(120)
+    delivery_address_line_2 varchar(120)
+    delivery_postal_code varchar(20)
+    postal_address_line_1 varchar(120)
+    postal_address_line_2 varchar(120)
+    postal_postal_code varchar(20)
+    last_edited_by integer
+    note: "Main entity table for suppliers (organizations)"
+}
+
+TABLE Sales.buying_groups {
+    buying_group_id integer [primary key]
+    buying_group_name varchar(100)
+    last_edited_by integer
+    note: "Customer organizations can be part of groups that exert greater buying power"
+}
+
+TABLE Sales.customer_categories {
+    customer_category_id integer [primary key]
+    customer_category_name varchar(100)
+    last_edited_by integer
+    note: "Categories for customers (for example, novelty stores, supermarkets, etc.)"
+}
+
+TABLE Sales.customer_transactions {
+    customer_transaction_id integer [primary key]
+    customer_id integer
+    transaction_type_id integer
+    invoice_id integer
+    payment_method_id integer
+    transaction_date date
+    amount_excluding_tax numeric(18,2)
+    tax_amount numeric(18,2)
+    transaction_amount numeric(18,2)
+    outstanding_balance numeric(18,2)
+    finalization_date date
+    is_finalized boolean
+    last_edited_by integer
+    last_edited_when timestamp
+    note: "All financial transactions that are customer-related (invoices, payments)"
+}
+
+TABLE Sales.customers {
+    customer_id integer [primary key]
+    customer_name varchar(200)
+    bill_to_customer_id integer
+    customer_category_id integer
+    buying_group_id integer
+    primary_contact_person_id integer
+    alternate_contact_person_id integer
+    delivery_method_id integer
+    delivery_city_id integer
+    postal_city_id integer
+    credit_limit numeric(18,2)
+    account_opened_date date
+    standard_discount_percentage numeric(18,3)
+    is_statement_sent boolean
+    is_on_credit_hold boolean
+    payment_days integer
+    phone_number varchar(40)
+    fax_number varchar(40)
+    delivery_run varchar(10)
+    run_position varchar(10)
+    website_url varchar(512)
+    delivery_address_line_1 varchar(120)
+    delivery_address_line_2 varchar(120)
+    delivery_postal_code varchar(20)
+    postal_address_line_1 varchar(120)
+    postal_address_line_2 varchar(120)
+    postal_postal_code varchar(20)
+    last_edited_by integer
+    note: "Main entity tables for customers (organizations or individuals)"
+}
+
+TABLE Sales.invoice_lines {
+    invoice_line_id integer [primary key]
+    invoice_id integer
+    stock_item_id integer
+    description varchar(200)
+    package_type_id integer
+    quantity integer
+    unit_price numeric(18,2)
+    tax_rate numeric(18,3)
+    tax_amount numeric(18,2)
+    line_profit numeric(18,2)
+    extended_price numeric(18,2)
+    last_edited_by integer
+    last_edited_when timestamp
+    note: "Detail lines from customer orders"
+}
+
+TABLE Sales.invoices {
+    invoice_id integer [primary key]
+    customer_id integer
+    bill_to_customer_id integer
+    order_id integer
+    delivery_method_id integer
+    contact_person_id integer
+    accounts_person_id integer
+    salesperson_person_id integer
+    packed_by_person_id integer
+    invoice_date date
+    customer_purchase_order_number varchar(40)
+    is_credit_note boolean
+    credit_note_reason text
+    comments text
+    delivery_instructions text
+    internal_comments text
+    total_dry_items integer
+    total_chiller_items integer
+    delivery_run varchar(10)
+    run_position varchar(10)
+    returned_delivery_data text
+    confirmed_delivery_time timestamp
+    confirmed_received_by varchar(8000)
+    last_edited_by integer
+    last_edited_when timestamp
+    note: "Details of customer invoices"
+}
+
+TABLE Sales.order_lines {
+    order_line_id integer [primary key]
+    order_id integer
+    stock_item_id integer
+    description varchar(200)
+    package_type_id integer
+    quantity integer
+    unit_price numeric(18,2)
+    tax_rate numeric(18,3)
+    picked_quantity integer
+    picking_completed_when timestamp
+    last_edited_by integer
+    last_edited_when timestamp
+    note: "Detail lines from customer orders"
+}
+
+TABLE Sales.orders {
+    order_id integer [primary key]
+    customer_id integer
+    salesperson_person_id integer
+    picked_by_person_id integer
+    contact_person_id integer
+    backorder_order_id integer
+    order_date date
+    expected_delivery_date date
+    customer_purchase_order_number varchar(40)
+    is_undersupply_backordered boolean
+    comments text
+    delivery_instructions text
+    internal_comments text
+    picking_completed_when timestamp
+    last_edited_by integer
+    last_edited_when timestamp
+    note: "Detail of customer orders"
+}
+
+TABLE Sales.special_deals {
+    special_deal_id integer [primary key]
+    stock_item_id integer
+    customer_id integer
+    buying_group_id integer
+    customer_category_id integer
+    stock_group_id integer
+    deal_description varchar(60)
+    start_date date
+    end_date date
+    discount_amount numeric(18,2)
+    discount_percentage numeric(18,3)
+    unit_price numeric(18,2)
+    last_edited_by integer
+    last_edited_when timestamp
+    note: "Special pricing. This can include fixed prices, discount in dollars or discount percent."
+}
+
+TABLE Warehouse.colors {
+    color_id integer [primary key]
+    color_name varchar(40)
+    last_edited_by integer
+    note: "Stock items can (optionally) have colors"
+}
+
+TABLE Warehouse.package_types {
+    package_type_id integer [primary key]
+    package_type_name varchar(100)
+    last_edited_by integer
+    note: "Ways that stock items can be packaged (for example, box, carton, pallet, kg, etc."
+}
+
+TABLE Warehouse.stock_groups {
+    stock_group_id integer [primary key]
+    stock_group_name varchar(100)
+    last_edited_by integer
+    note: "Groups for categorizing stock items (for example, novelties, toys, edible novelties, etc.)"
+}
+
+TABLE Warehouse.stock_item_holdings {
+    stock_item_id integer
+    quantity_on_hand integer
+    bin_location varchar(40)
+    last_stocktake_quantity integer
+    last_cost_price numeric(18,2)
+    reorder_level integer
+    target_stock_level integer
+    last_edited_by integer
+    last_edited_when timestamp [default: `('now'::text)::timestamp without time zone`]
+    note: "Non-temporal columns for stock items. These are frequently updated columns."
+}
+
+TABLE Warehouse.stock_item_stock_groups {
+    stock_item_stock_group_id integer [primary key]
+    stock_item_id integer
+    stock_group_id integer
+    last_edited_by integer
+    last_edited_when timestamp [default: `('now'::text)::timestamp without time zone`]
+    note: "Which stock items are in which stock groups (many to many)"
+}
+
+TABLE Warehouse.stock_item_transactions {
+    stock_item_transaction_id integer [primary key]
+    stock_item_id integer
+    transaction_type_id integer
+    customer_id integer
+    invoice_id integer
+    supplier_id integer
+    purchase_order_id integer
+    transaction_occurred_when timestamp
+    quantity numeric(18,3)
+    last_edited_by integer
+    last_edited_when timestamp
+    note: "Transactions covering all movements of all stock items (receipt, sale, write-off)"
+}
+
+TABLE Warehouse.stock_items {
+    stock_item_id integer [primary key]
+    stock_item_name varchar(200)
+    supplier_id integer
+    color_id integer
+    unit_package_id integer
+    outer_package_id integer
+    brand varchar(100)
+    size varchar(40)
+    lead_time_days integer
+    quantity_per_outer integer
+    is_chiller_stock boolean
+    barcode varchar(100)
+    tax_rate numeric(18,3)
+    unit_price numeric(18,2)
+    recommended_retail_price numeric(18,2)
+    typical_weight_per_unit numeric(18,3)
+    marketing_comments text
+    internal_comments text
+    photo bytea
+    custom_fields text
+    tags text
+    search_details text
+    last_edited_by integer
+    note: "Main entity table for stock items"
+}
+
+TABLE Public.test {
+    id integer [primary key]
+    name varchar(20)
+    address varchar(100)
+    zipcode char(5)
+    introduction text
+    note: "Sample table"
+}
+
+Ref: Application.cities.last_edited_by > Application.people.person_id
+Ref: Application.cities.state_province_id > Application.state_provinces.state_province_id
+Ref: Application.countries.last_edited_by > Application.people.person_id
+Ref: Application.delivery_methods.last_edited_by > Application.people.person_id
+Ref: Application.payment_methods.last_edited_by > Application.people.person_id
+Ref: Application.people.last_edited_by > Application.people.person_id
+Ref: Application.state_provinces.country_id > Application.countries.country_id
+Ref: Application.state_provinces.last_edited_by > Application.people.person_id
+Ref: Application.system_parameters.delivery_city_id > Application.cities.city_id
+Ref: Application.system_parameters.postal_city_id > Application.cities.city_id
+Ref: Application.system_parameters.last_edited_by > Application.people.person_id
+Ref: Application.transaction_types.last_edited_by > Application.people.person_id
+Ref: Purchasing.purchase_order_lines.package_type_id > Warehouse.package_types.package_type_id
+Ref: Purchasing.purchase_order_lines.last_edited_by > Application.people.person_id
+Ref: Purchasing.purchase_order_lines.purchase_order_id > Purchasing.purchase_orders.purchase_order_id
+Ref: Purchasing.purchase_order_lines.stock_item_id > Warehouse.stock_items.stock_item_id
+Ref: Purchasing.purchase_orders.delivery_method_id > Application.delivery_methods.delivery_method_id
+Ref: Purchasing.purchase_orders.contact_person_id > Application.people.person_id
+Ref: Purchasing.purchase_orders.last_edited_by > Application.people.person_id
+Ref: Purchasing.purchase_orders.supplier_id > Purchasing.suppliers.supplier_id
+Ref: Purchasing.supplier_categories.last_edited_by > Application.people.person_id
+Ref: Purchasing.supplier_transactions.payment_method_id > Application.payment_methods.payment_method_id
+Ref: Purchasing.supplier_transactions.last_edited_by > Application.people.person_id
+Ref: Purchasing.supplier_transactions.purchase_order_id > Purchasing.purchase_orders.purchase_order_id
+Ref: Purchasing.supplier_transactions.supplier_id > Purchasing.suppliers.supplier_id
+Ref: Purchasing.supplier_transactions.transaction_type_id > Application.transaction_types.transaction_type_id
+Ref: Purchasing.suppliers.delivery_city_id > Application.cities.city_id
+Ref: Purchasing.suppliers.postal_city_id > Application.cities.city_id
+Ref: Purchasing.suppliers.delivery_method_id > Application.delivery_methods.delivery_method_id
+Ref: Purchasing.suppliers.alternate_contact_person_id > Application.people.person_id
+Ref: Purchasing.suppliers.last_edited_by > Application.people.person_id
+Ref: Purchasing.suppliers.primary_contact_person_id > Application.people.person_id
+Ref: Purchasing.suppliers.supplier_category_id > Purchasing.supplier_categories.supplier_category_id
+Ref: Sales.buying_groups.last_edited_by > Application.people.person_id
+Ref: Sales.customer_categories.last_edited_by > Application.people.person_id
+Ref: Sales.customer_transactions.customer_id > Sales.customers.customer_id
+Ref: Sales.customer_transactions.invoice_id > Sales.invoices.invoice_id
+Ref: Sales.customer_transactions.payment_method_id > Application.payment_methods.payment_method_id
+Ref: Sales.customer_transactions.last_edited_by > Application.people.person_id
+Ref: Sales.customer_transactions.transaction_type_id > Application.transaction_types.transaction_type_id
+Ref: Sales.customers.buying_group_id > Sales.buying_groups.buying_group_id
+Ref: Sales.customers.delivery_city_id > Application.cities.city_id
+Ref: Sales.customers.postal_city_id > Application.cities.city_id
+Ref: Sales.customers.customer_category_id > Sales.customer_categories.customer_category_id
+Ref: Sales.customers.bill_to_customer_id > Sales.customers.customer_id
+Ref: Sales.customers.delivery_method_id > Application.delivery_methods.delivery_method_id
+Ref: Sales.customers.alternate_contact_person_id > Application.people.person_id
+Ref: Sales.customers.last_edited_by > Application.people.person_id
+Ref: Sales.customers.primary_contact_person_id > Application.people.person_id
+Ref: Sales.invoice_lines.invoice_id > Sales.invoices.invoice_id
+Ref: Sales.invoice_lines.package_type_id > Warehouse.package_types.package_type_id
+Ref: Sales.invoice_lines.last_edited_by > Application.people.person_id
+Ref: Sales.invoice_lines.stock_item_id > Warehouse.stock_items.stock_item_id
+Ref: Sales.invoices.bill_to_customer_id > Sales.customers.customer_id
+Ref: Sales.invoices.customer_id > Sales.customers.customer_id
+Ref: Sales.invoices.delivery_method_id > Application.delivery_methods.delivery_method_id
+Ref: Sales.invoices.order_id > Sales.orders.order_id
+Ref: Sales.invoices.accounts_person_id > Application.people.person_id
+Ref: Sales.invoices.contact_person_id > Application.people.person_id
+Ref: Sales.invoices.last_edited_by > Application.people.person_id
+Ref: Sales.invoices.packed_by_person_id > Application.people.person_id
+Ref: Sales.invoices.salesperson_person_id > Application.people.person_id
+Ref: Sales.order_lines.order_id > Sales.orders.order_id
+Ref: Sales.order_lines.package_type_id > Warehouse.package_types.package_type_id
+Ref: Sales.order_lines.last_edited_by > Application.people.person_id
+Ref: Sales.order_lines.stock_item_id > Warehouse.stock_items.stock_item_id
+Ref: Sales.orders.customer_id > Sales.customers.customer_id
+Ref: Sales.orders.backorder_order_id > Sales.orders.order_id
+Ref: Sales.orders.contact_person_id > Application.people.person_id
+Ref: Sales.orders.last_edited_by > Application.people.person_id
+Ref: Sales.orders.picked_by_person_id > Application.people.person_id
+Ref: Sales.orders.salesperson_person_id > Application.people.person_id
+Ref: Sales.special_deals.buying_group_id > Sales.buying_groups.buying_group_id
+Ref: Sales.special_deals.customer_id > Sales.customers.customer_id
+Ref: Sales.special_deals.last_edited_by > Application.people.person_id
+Ref: Sales.special_deals.stock_group_id > Warehouse.stock_groups.stock_group_id
+Ref: Sales.special_deals.stock_item_id > Warehouse.stock_items.stock_item_id
+Ref: Warehouse.colors.last_edited_by > Application.people.person_id
+Ref: Warehouse.package_types.last_edited_by > Application.people.person_id
+Ref: Warehouse.stock_groups.last_edited_by > Application.people.person_id
+Ref: Warehouse.stock_item_holdings.last_edited_by > Application.people.person_id
+Ref: Warehouse.stock_item_holdings.stock_item_id > Warehouse.stock_items.stock_item_id
+Ref: Warehouse.stock_item_stock_groups.last_edited_by > Application.people.person_id
+Ref: Warehouse.stock_item_stock_groups.stock_group_id > Warehouse.stock_groups.stock_group_id
+Ref: Warehouse.stock_item_stock_groups.stock_item_id > Warehouse.stock_items.stock_item_id
+Ref: Warehouse.stock_item_transactions.customer_id > Sales.customers.customer_id
+Ref: Warehouse.stock_item_transactions.invoice_id > Sales.invoices.invoice_id
+Ref: Warehouse.stock_item_transactions.last_edited_by > Application.people.person_id
+Ref: Warehouse.stock_item_transactions.purchase_order_id > Purchasing.purchase_orders.purchase_order_id
+Ref: Warehouse.stock_item_transactions.stock_item_id > Warehouse.stock_items.stock_item_id
+Ref: Warehouse.stock_item_transactions.supplier_id > Purchasing.suppliers.supplier_id
+Ref: Warehouse.stock_item_transactions.transaction_type_id > Application.transaction_types.transaction_type_id
+Ref: Warehouse.stock_items.color_id > Warehouse.colors.color_id
+Ref: Warehouse.stock_items.outer_package_id > Warehouse.package_types.package_type_id
+Ref: Warehouse.stock_items.unit_package_id > Warehouse.package_types.package_type_id
+Ref: Warehouse.stock_items.last_edited_by > Application.people.person_id
+Ref: Warehouse.stock_items.supplier_id > Purchasing.suppliers.supplier_id

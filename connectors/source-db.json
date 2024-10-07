@@ -1,0 +1,21 @@
+{
+  "name": "source-public-test-v1",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "plugin.name": "pgoutput",
+    "database.history.kafka.bootstrap.servers": "kafka-server:9092",
+    "database.history.kafka.topic": "dbhistory.public",
+    "topic.prefix": "source_db",
+    "topic.creation.default.replication.factor": "3",
+    "topic.creation.default.partitions": "1",
+    "include.schema.changes": "true",
+    "schema.include.list": "public",
+    "table.include.list": "public.test",
+    "slot.name": "dbz_public_test",
+    "slot.drop_on_stop": "true",
+    "transforms": "route",
+    "transforms.route.type": "org.apache.kafka.connect.transforms.RegexRouter",
+    "transforms.route.regex": "([^.]+)\\.([^.]+)\\.([^.]+)",
+    "transforms.route.replacement": "$2.$3"
+  }
+}

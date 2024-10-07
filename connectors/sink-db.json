@@ -1,0 +1,24 @@
+{
+  "name": "sink-public-test-v3",
+  "config": {
+    "connector.class": "io.confluent.connect.jdbc.JdbcSinkConnector",
+    "tasks.max": 2,
+    "max.poll.records": 4000,
+    "batch.size": 4000,
+    "topics": "public.test",
+    "pk.fields": "id",
+    "pk.mode": "record_key",
+    "insert.mode": "upsert",
+    "delete.enabled": true,
+    "auto.create": true,
+    "consumer.fetch.min.bytes": 1000000,
+    "consumer.fetch.wait.max.ms": 1000,
+    "transforms": "unwrap,route",
+    "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
+    "transforms.unwrap.drop.tombstones": true,
+    "transforms.unwrap.delete.handling.mode": "rewrite",
+    "transforms.route.type": "org.apache.kafka.connect.transforms.RegexRouter",
+    "transforms.route.regex": "([^.]+)\\.([^.]+)",
+    "transforms.route.replacement": "$2"
+  }
+}

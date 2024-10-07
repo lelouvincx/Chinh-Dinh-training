@@ -1,4 +1,0 @@
-.docker/data/*
-.docker/backups/*
-restore.log
-database-replication.code-workspace

@@ -1,0 +1,194 @@
+name: General Continuous Integration
+run-name: ${{ github.actor }} is testing Github Actions
+
+
+on: [push]
+
+
+jobs:
+  explore-github-actions:
+    runs-on: ubuntu-22.04
+    steps:
+      - run: echo "The job was automatically triggered by a ${{ github.event_name }} event."
+
+      - run: echo "This job is now running on a ${{ runner.os }} server hosted by Github."
+
+      - run: echo "The name of your branch is ${{ github.ref }}  and your repository is ${{ github.repository }}."
+
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+
+      - run: echo "The ${{ github.repository }} repository has been cloned to the runner."
+
+      - run: echo "The workflow is now ready to test your code on the runner."
+
+      - name: View environment variables
+        run: printenv
+
+      - name: List files in the repository
+        run: |
+          ls -lah ${{ github.workspace }}
+
+      - run: echo "This job's status is ${{ job.status }}."
+
+  check-changes:
+    runs-on: ubuntu-22.04
+
+    outputs:
+      upstream-app: ${{ steps.changes.outputs.upstream-app }}
+      kafka-connect: ${{ steps.changes.outputs.kafka-connect }}
+
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+
+      - name: Check changes
+        uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          base: ${{ github.ref }}
+          ref: ${{ github.ref }}
+          filters: |
+            upstream-app:
+              - ".docker/images/app/**"
+            kafka-connect:
+              - ".docker/images/kafka-connect/**"
+
+  build-push-upstream-app:
+    needs: check-changes
+    if: ${{ needs.check-changes.outputs.upstream-app == 'true' }}
+    runs-on: ubuntu-22.04
+
+    env:
+      REGISTRY: ghcr.io
+      UPSTREAM_APP_IMAGE_NAME: upstream-app
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Login to the container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.actor }}/${{ env.UPSTREAM_APP_IMAGE_NAME }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: .docker/images/app/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  build-push-kafka-connect:
+    needs: check-changes
+    if: ${{ needs.check-changes.outputs.kafka-connect == 'true' }}
+    runs-on: ubuntu-22.04
+
+    env:
+      REGISTRY: ghcr.io
+      KAFKA_CONNECT_IMAGE_NAME: kafka-connect
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Login to the container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.actor }}/${{ env.KAFKA_CONNECT_IMAGE_NAME }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: .docker/images/kafka-connect/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  unit-test-upstream-app:
+    needs: build-push-upstream-app
+    if: | # Always run after build-push-upstream-app
+      always() &&
+      (needs.build-push-upstream-app.result == 'success' || needs.build-push-upstream-app.result == 'skipped')
+    runs-on: ubuntu-22.04
+
+    env:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: wideworldimporters
+      POSTGRES_PORT: 5432
+      REGISTRY: ghcr.io
+      UPSTREAM_APP_IMAGE_NAME: upstream-app
+
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Login to the container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) from existing docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.actor }}/${{ env.UPSTREAM_APP_IMAGE_NAME }}
+
+      - name: Setup docker-compose
+        uses: KengoTODA/actions-setup-docker-compose@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: View current working dir
+        run: pwd && ls -a && ls -lah app
+
+      - name: Compose up services
+        run: docker-compose version && docker-compose -f app/tests/docker-compose.yml --project-directory . up -d
+
+      - name: View running services
+        run: docker-compose -f app/tests/docker-compose.yml --project-directory . ps -a && sleep 15
+
+      - name: Unit tests
+        run: docker-compose -f app/tests/docker-compose.yml --project-directory . exec upstream-app python -m pytest --log-cli-level info -p no:warnings -v /app/tests
+
+      - name: Compose down services
+        run: docker-compose -f app/tests/docker-compose.yml --project-directory . down
